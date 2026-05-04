@@ -1,0 +1,253 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #0f172a;
+    color: white;
+    text-align: center;
+}
+
+.quiz-container {
+    margin-top: 100px;
+}
+
+.show-title {
+    display: inline-block;
+    margin: 0 0 34px;
+    padding: 14px 54px 18px;
+    background: #facc15;
+    color: #111827;
+    border: 4px solid #fde68a;
+    border-radius: 999px;
+    font-family: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
+    font-size: 42px;
+    font-weight: 900;
+    letter-spacing: 0;
+    box-shadow: 0 8px 0 #ca8a04, 0 18px 32px rgba(0, 0, 0, 0.35);
+    transform: rotate(-2deg);
+}
+
+#question {
+    font-size: 22px;
+    margin-bottom: 20px;
+}
+
+#name-box {
+    margin: -16px auto 22px;
+}
+
+#player-name {
+    width: min(260px, 80vw);
+    padding: 10px 14px;
+    border: 2px solid #facc15;
+    border-radius: 8px;
+    background: #111827;
+    color: white;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    outline: none;
+}
+
+#player-name::placeholder {
+    color: #94a3b8;
+}
+
+#leaderboard {
+    width: min(980px, 94vw);
+    margin: 0 auto 22px;
+    padding: 12px;
+    background: rgba(17, 24, 39, 0.72);
+    border: 1px solid rgba(250, 204, 21, 0.5);
+    border-radius: 8px;
+}
+
+#leaderboard h2 {
+    margin: 0 0 10px;
+    color: #fef3c7;
+    font-size: 20px;
+}
+
+.leaderboard-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 14px;
+}
+
+#leaderboard h3 {
+    margin: 0 0 8px;
+    color: white;
+    font-size: 15px;
+}
+
+#leaderboard table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 13px;
+}
+
+#leaderboard th,
+#leaderboard td {
+    padding: 7px 8px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+}
+
+#leaderboard th {
+    color: #facc15;
+}
+
+#leaderboard td {
+    color: #e5e7eb;
+}
+
+@media (max-width: 760px) {
+    .leaderboard-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+#game-info {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    gap: 12px;
+    margin: 0 auto 18px;
+    flex-wrap: wrap;
+}
+
+#timer,
+#opponent {
+    background: #111827;
+    border: 2px solid #facc15;
+    border-radius: 8px;
+    color: #fef3c7;
+    font-weight: 800;
+    padding: 8px 12px;
+}
+
+#timer {
+    min-width: 34px;
+}
+
+#scoreboard {
+    display: none;
+    width: min(920px, 94vw);
+    margin: 0 auto 18px;
+    padding: 10px;
+    background: rgba(17, 24, 39, 0.78);
+    border: 1px solid rgba(250, 204, 21, 0.55);
+    border-radius: 8px;
+    overflow-x: auto;
+}
+
+#score-track {
+    display: flex;
+    gap: 8px;
+    min-width: max-content;
+}
+
+.score-card {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 108px;
+    padding: 8px 10px;
+    background: rgba(71, 85, 105, 0.36);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 8px;
+}
+
+.score-number {
+    display: grid;
+    place-items: center;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    font-weight: 900;
+}
+
+.score-question {
+    font-size: 13px;
+    font-weight: 800;
+    white-space: nowrap;
+}
+
+.score-results {
+    display: flex;
+    gap: 4px;
+    margin-left: auto;
+}
+
+.score-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: #475569;
+    box-shadow: inset 0 0 0 2px rgba(255, 255, 255, 0.14);
+}
+
+.score-dot.right {
+    background: #22c55e;
+}
+
+.score-dot.wrong-dot {
+    background: #ef4444;
+}
+
+.answer-btn {
+    display: block;
+    width: 250px;
+    margin: 10px auto;
+    padding: 10px;
+    border: none;
+    background: #1e293b;
+    color: white;
+    cursor: pointer;
+    border-radius: 8px;
+    min-height: 42px;
+}
+
+.answer-btn:hover {
+    background: #334155;
+}
+
+#difficulty-box {
+    display: none;
+    justify-content: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 18px auto 4px;
+    max-width: 420px;
+}
+
+.difficulty-btn {
+    padding: 8px 12px;
+    border: 2px solid #facc15;
+    background: #111827;
+    color: #fef3c7;
+    cursor: pointer;
+    border-radius: 8px;
+    font-weight: 700;
+}
+
+.difficulty-btn.active {
+    background: #facc15;
+    color: #111827;
+}
+
+.correct {
+    background: green !important;
+}
+
+.wrong {
+    background: red !important;
+}
+
+#next-btn {
+    margin-top: 20px;
+    padding: 10px 20px;
+    background: #22c55e;
+    border: none;
+    cursor: pointer;
+    border-radius: 8px;
+}
