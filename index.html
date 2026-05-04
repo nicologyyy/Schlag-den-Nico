@@ -8,6 +8,7 @@
 <body>
 
 <div class="quiz-container">
+    <div id="confetti-layer"></div>
     <h1 class="show-title">Schlag den Nico</h1>
     <div id="name-box">
         <input id="player-name" type="text" maxlength="18" placeholder="Gamertag">
@@ -23,8 +24,9 @@
                             <th>#</th>
                             <th>Gamertag</th>
                             <th>Datum</th>
-                            <th>Uhrzeit</th>
+                            <th>Zeit</th>
                             <th>Punkte</th>
+                            <th>Level</th>
                         </tr>
                     </thead>
                     <tbody id="leaderboard-body"></tbody>
@@ -32,13 +34,19 @@
             </section>
             <section>
                 <h3>Online</h3>
+                <div id="online-filter">
+                    <button class="leaderboard-filter-btn active" type="button" data-filter="Einfach" onclick="selectOnlineLeaderboard('Einfach')">Einfach</button>
+                    <button class="leaderboard-filter-btn" type="button" data-filter="Mittel" onclick="selectOnlineLeaderboard('Mittel')">Mittel</button>
+                    <button class="leaderboard-filter-btn" type="button" data-filter="Schwer" onclick="selectOnlineLeaderboard('Schwer')">Schwer</button>
+                    <button class="leaderboard-filter-btn" type="button" data-filter="Genie" onclick="selectOnlineLeaderboard('Genie')">Genie</button>
+                </div>
                 <table>
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Gamertag</th>
                             <th>Datum</th>
-                            <th>Uhrzeit</th>
+                            <th>Zeit</th>
                             <th>Punkte</th>
                         </tr>
                     </thead>
@@ -47,7 +55,7 @@
             </section>
         </div>
     </div>
-    <div id="question">Frage wird geladen...</div>
+    <div id="question"></div>
     <div id="game-info">
         <div id="timer">15</div>
         <div id="opponent">Nico wartet...</div>
@@ -71,6 +79,7 @@
     </div>
 
     <button id="next-btn" onclick="nextQuestion()">Weiter</button>
+    <button id="home-btn" type="button" onclick="goHome()">Zum Anfang</button>
     <div id="score"></div>
 </div>
 

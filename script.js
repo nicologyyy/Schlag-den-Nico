@@ -6,7 +6,22 @@ const facts = [
     "Ein Tag auf Venus ist länger als ein Jahr.",
     "Katzen schlafen bis zu 16 Stunden am Tag.",
     "Blitz ist heißer als die Sonne.",
-    "Wasser kann gleichzeitig fest und flüssig sein."
+    "Wasser kann gleichzeitig fest und flüssig sein.",
+    "Erdbeeren sind botanisch keine Beeren.",
+    "Schnecken können mehrere Jahre schlafen.",
+    "Der Eiffelturm wird bei Hitze ein kleines Stück höher.",
+    "Im Weltall kann man nicht pfeifen.",
+    "Koalas haben Fingerabdrücke, die menschlichen ähneln.",
+    "Eine Wolke kann mehrere hundert Tonnen wiegen.",
+    "Der kürzeste Krieg der Geschichte dauerte weniger als eine Stunde.",
+    "Menschen teilen etwa die Hälfte ihrer DNA mit Bananen.",
+    "Auf dem Mond gibt es Fußspuren, die sehr lange erhalten bleiben.",
+    "Ein Blauwal-Herz ist ungefähr so groß wie ein kleines Auto.",
+    "Glas ist kein wirklich flüssiger Stoff.",
+    "Manche Metalle können bei Raumtemperatur schmelzen.",
+    "Der Geruch von Regen hat einen eigenen Namen: Petrichor.",
+    "Eine Minute auf einer heißen Herdplatte fühlt sich länger an als eine Minute auf dem Sofa.",
+    "Es gibt mehr mögliche Schachpartien als Atome im beobachtbaren Universum."
 ];
 
 const questionData = {
@@ -458,10 +473,12 @@ let timerIntervalId = null;
 let timeLeft = 15;
 const recentQuestionHistory = {};
 let playerName = "Du";
+let roundStartedAt = null;
 const leaderboardStorageKey = "schlag-den-nico-leaderboard";
 const supabaseUrl = "https://enomiaewxwqvzuhqfhff.supabase.co";
 const supabaseKey = "sb_publishable_Ehg3yiC5TuFe_BrClkC-Vw_O0FDEEUy";
 const onlineLeaderboardTable = "leaderboard";
+let selectedOnlineLeaderboard = "Einfach";
 
 const opponentChances = {
     easy: 0.55,
@@ -471,10 +488,17 @@ const opponentChances = {
 };
 
 const perfectPointWindows = {
-    easy: 1,
+    easy: 2,
     medium: 2,
     hard: 3,
     genius: 5
+};
+
+const difficultyLabels = {
+    easy: "Einfach",
+    medium: "Mittel",
+    hard: "Schwer",
+    genius: "Genie"
 };
 
 function shuffleFacts() {
@@ -485,6 +509,12 @@ function loadFacts() {
     const buttons = document.querySelectorAll(".answer-btn");
     const shuffledFacts = shuffleFacts();
 
+    stopConfetti();
+    document.body.classList.remove("result-screen", "winner-screen", "loser-screen");
+    document.body.classList.remove("quiz-active");
+    document.getElementById("next-btn").style.display = "inline-block";
+    document.getElementById("next-btn").innerText = "Weiter";
+    document.getElementById("home-btn").style.display = "none";
     document.getElementById("difficulty-box").style.display = "none";
     document.getElementById("game-info").style.display = "none";
     document.getElementById("scoreboard").style.display = "none";
@@ -497,6 +527,12 @@ function loadFacts() {
         button.style.display = index === 0 ? "block" : "none";
         button.innerText = index === 0 ? shuffledFacts[0] : "";
     });
+}
+
+function showNextFact() {
+    if (!quizStarted) {
+        loadFacts();
+    }
 }
 
 function resetScoreDots() {
@@ -562,8 +598,10 @@ function selectDifficulty(difficulty) {
 function showCategories() {
     const buttons = document.querySelectorAll(".answer-btn");
 
+    document.body.classList.add("quiz-active");
     document.getElementById("question").innerText = "Wähle eine Kategorie";
     document.getElementById("next-btn").style.display = "none";
+    document.getElementById("home-btn").style.display = "none";
     document.getElementById("difficulty-box").style.display = "flex";
     document.getElementById("game-info").style.display = "none";
     document.getElementById("scoreboard").style.display = "none";
@@ -722,6 +760,10 @@ function showQuestion() {
     const currentQuestion = roundQuestions[currentQuestionIndex];
     const buttons = document.querySelectorAll(".answer-btn");
 
+    if (currentQuestionIndex === 0 && !roundStartedAt) {
+        roundStartedAt = Date.now();
+    }
+
     document.getElementById("question").innerText = `Frage ${currentQuestionIndex + 1}/10: ${currentQuestion.question}`;
     document.getElementById("next-btn").style.display = "inline-block";
     document.getElementById("next-btn").innerText = currentQuestionIndex === 9 ? "Ergebnis" : "Nächste Frage";
@@ -742,6 +784,28 @@ function showQuestion() {
     startTimer();
 }
 
+function showPointRules() {
+    const buttons = document.querySelectorAll(".answer-btn");
+
+    document.getElementById("question").innerText =
+        "Punkte-Regel: Pro Frage sind maximal 100 Punkte möglich. Je schneller du richtig antwortest, desto mehr Punkte bekommst du.";
+    document.getElementById("next-btn").innerText = "Quiz starten";
+    document.getElementById("next-btn").style.display = "inline-block";
+    document.getElementById("home-btn").style.display = "none";
+    document.getElementById("difficulty-box").style.display = "none";
+    document.getElementById("game-info").style.display = "none";
+    document.getElementById("scoreboard").style.display = "none";
+    document.getElementById("score").innerText = "";
+    roundStartedAt = null;
+    questionAnswered = true;
+    currentQuestionIndex = -1;
+
+    buttons.forEach((button) => {
+        button.style.display = "none";
+        button.disabled = true;
+    });
+}
+
 function startQuizShow() {
     quizStarted = true;
     clearInterval(factIntervalId);
@@ -752,12 +816,21 @@ function startQuizShow() {
 
 function finishRound() {
     const buttons = document.querySelectorAll(".answer-btn");
+    const resultMessage = getResultMessage();
     stopTimer();
     saveLeaderboardEntry();
 
-    document.getElementById("question").innerText = `Runde fertig! ${playerName}: ${playerPoints} Punkte (${score}/10) | Nico: ${opponentPoints} Punkte (${opponentScore}/10)`;
+    document.getElementById("question").innerText =
+        `${resultMessage} ${playerName}: ${playerPoints} Punkte (${score}/10) | Nico: ${opponentPoints} Punkte (${opponentScore}/10)`;
+    document.body.classList.add("result-screen");
+    document.body.classList.toggle("winner-screen", playerPoints > opponentPoints);
+    document.body.classList.toggle("loser-screen", playerPoints < opponentPoints);
+    if (playerPoints > opponentPoints) {
+        startConfetti();
+    }
     document.getElementById("next-btn").innerText = "Neue Runde";
     document.getElementById("next-btn").style.display = "inline-block";
+    document.getElementById("home-btn").style.display = "inline-block";
     document.getElementById("difficulty-box").style.display = "none";
     document.getElementById("game-info").style.display = "none";
     document.getElementById("scoreboard").style.display = "block";
@@ -775,10 +848,70 @@ function finishRound() {
     });
 }
 
+function startConfetti() {
+    const confettiLayer = document.getElementById("confetti-layer");
+
+    confettiLayer.innerHTML = "";
+
+    for (let index = 0; index < 90; index += 1) {
+        const piece = document.createElement("span");
+        piece.className = "confetti-piece";
+        piece.style.left = `${Math.random() * 100}%`;
+        piece.style.animationDelay = `${Math.random() * 1.5}s`;
+        piece.style.animationDuration = `${2.2 + Math.random() * 1.8}s`;
+        piece.style.background = getConfettiColor(index);
+        confettiLayer.appendChild(piece);
+    }
+
+    window.setTimeout(stopConfetti, 5200);
+}
+
+function stopConfetti() {
+    const confettiLayer = document.getElementById("confetti-layer");
+
+    if (confettiLayer) {
+        confettiLayer.innerHTML = "";
+    }
+}
+
+function getConfettiColor(index) {
+    const colors = ["#facc15", "#22c55e", "#38bdf8", "#f97316", "#e879f9", "#ffffff"];
+    return colors[index % colors.length];
+}
+
+function getResultMessage() {
+    if (playerPoints > opponentPoints) {
+        return "Du hast gegen Nico gewonnen!";
+    }
+
+    if (playerPoints < opponentPoints) {
+        return "Du hast gegen Nico verloren!";
+    }
+
+    return "Unentschieden gegen Nico!";
+}
+
 function updatePlayerName() {
     const nameInput = document.getElementById("player-name");
     const cleanedName = nameInput.value.trim();
     playerName = cleanedName || "Du";
+}
+
+function goHome() {
+    stopTimer();
+    quizStarted = false;
+    selectedCategory = null;
+    roundQuestions = [];
+    currentQuestionIndex = 0;
+    score = 0;
+    opponentScore = 0;
+    playerPoints = 0;
+    opponentPoints = 0;
+    questionAnswered = false;
+
+    clearInterval(factIntervalId);
+    loadFacts();
+    factIntervalId = setInterval(loadFacts, 8000);
 }
 
 function getLeaderboard() {
@@ -797,13 +930,12 @@ function getLeaderboard() {
 
 function saveLeaderboardEntry() {
     const now = new Date();
+    const usedSeconds = roundStartedAt ? Math.max(1, Math.round((Date.now() - roundStartedAt) / 1000)) : 0;
     const entry = {
         name: playerName,
         date: now.toLocaleDateString("de-DE"),
-        time: now.toLocaleTimeString("de-DE", {
-            hour: "2-digit",
-            minute: "2-digit"
-        }),
+        usedTime: formatUsedTime(usedSeconds),
+        difficulty: difficultyLabels[selectedDifficulty],
         points: playerPoints
     };
     const leaderboard = [...getLeaderboard(), entry]
@@ -822,13 +954,13 @@ function updateLeaderboard() {
     leaderboardBody.innerHTML = "";
 
     if (!leaderboard.length) {
-        const emptyRow = createLeaderboardMessageRow("Noch keine Spiele");
+        const emptyRow = createLeaderboardMessageRow("Noch keine Spiele", 6);
         leaderboardBody.appendChild(emptyRow);
         return;
     }
 
     leaderboard.forEach((entry, index) => {
-        leaderboardBody.appendChild(createLeaderboardRow(entry, index));
+        leaderboardBody.appendChild(createLeaderboardRow(entry, index, true));
     });
 }
 
@@ -861,10 +993,11 @@ async function updateOnlineLeaderboard() {
     }
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online..."));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online...", 5));
 
     try {
-        const response = await fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}?select=name,date,time,points&order=points.desc&limit=10`, {
+        const difficultyFilter = `&difficulty=eq.${encodeURIComponent(selectedOnlineLeaderboard)}`;
+        const response = await fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}?select=name,date,usedTime,difficulty,points${difficultyFilter}&order=points.desc&limit=10`, {
             headers: getSupabaseHeaders()
         });
 
@@ -876,16 +1009,26 @@ async function updateOnlineLeaderboard() {
         onlineLeaderboardBody.innerHTML = "";
 
         if (!leaderboard.length) {
-            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spiele"));
+            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spiele", 5));
             return;
         }
 
         leaderboard.forEach((entry, index) => {
-            onlineLeaderboardBody.appendChild(createLeaderboardRow(entry, index));
+            onlineLeaderboardBody.appendChild(createLeaderboardRow(entry, index, false));
         });
     } catch {
         showOnlineLeaderboardMessage("Online-Tabelle noch nicht eingerichtet");
     }
+}
+
+function selectOnlineLeaderboard(filter) {
+    selectedOnlineLeaderboard = filter;
+
+    document.querySelectorAll("#online-filter .leaderboard-filter-btn").forEach((button) => {
+        button.classList.toggle("active", button.dataset.filter === filter);
+    });
+
+    updateOnlineLeaderboard();
 }
 
 function getSupabaseHeaders(extraHeaders = {}) {
@@ -900,37 +1043,49 @@ function showOnlineLeaderboardMessage(message) {
     const onlineLeaderboardBody = document.getElementById("online-leaderboard-body");
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message, 5));
 }
 
-function createLeaderboardRow(entry, index) {
+function createLeaderboardRow(entry, index, showDifficulty) {
     const row = document.createElement("tr");
     const rankCell = document.createElement("td");
     const nameCell = document.createElement("td");
     const dateCell = document.createElement("td");
-    const timeCell = document.createElement("td");
+    const usedTimeCell = document.createElement("td");
     const pointsCell = document.createElement("td");
+    const difficultyCell = document.createElement("td");
 
     rankCell.innerText = index + 1;
     nameCell.innerText = entry.name;
     dateCell.innerText = entry.date;
-    timeCell.innerText = entry.time;
+    usedTimeCell.innerText = entry.usedTime || entry.time || "-";
     pointsCell.innerText = entry.points;
+    difficultyCell.innerText = entry.difficulty || "-";
 
     row.appendChild(rankCell);
     row.appendChild(nameCell);
     row.appendChild(dateCell);
-    row.appendChild(timeCell);
+    row.appendChild(usedTimeCell);
     row.appendChild(pointsCell);
+    if (showDifficulty) {
+        row.appendChild(difficultyCell);
+    }
 
     return row;
 }
 
-function createLeaderboardMessageRow(message) {
+function formatUsedTime(totalSeconds) {
+    const minutes = Math.floor(totalSeconds / 60);
+    const seconds = totalSeconds % 60;
+
+    return `${minutes}:${String(seconds).padStart(2, "0")}`;
+}
+
+function createLeaderboardMessageRow(message, columns = 6) {
     const row = document.createElement("tr");
     const cell = document.createElement("td");
 
-    cell.colSpan = 5;
+    cell.colSpan = columns;
     cell.innerText = message;
     row.appendChild(cell);
 
@@ -977,7 +1132,7 @@ function selectAnswer(answerIndex) {
         playerPoints = 0;
         opponentPoints = 0;
         resetScoreDots();
-        showQuestion();
+        showPointRules();
         return;
     }
 
@@ -991,4 +1146,5 @@ function selectAnswer(answerIndex) {
 }
 
 loadFacts();
-factIntervalId = setInterval(loadFacts, 10000);
+document.querySelector(".answer-btn").addEventListener("click", showNextFact);
+factIntervalId = setInterval(loadFacts, 8000);
