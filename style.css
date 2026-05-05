@@ -1,6 +1,7 @@
 body {
     font-family: Arial, sans-serif;
-    background: #0f172a;
+    background-color: #0f172a;
+    background-image: linear-gradient(rgba(15, 23, 42, 0.42), rgba(15, 23, 42, 0.66)), url("quiz-hintergrund.png");
     background-size: cover;
     background-position: center;
     background-attachment: fixed;
