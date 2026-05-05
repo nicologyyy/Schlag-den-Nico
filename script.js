@@ -544,7 +544,6 @@ function fillToTarget(group, questionFactory) {
 
     while (group.length < QUESTIONS_PER_DIFFICULTY) {
         const question = [...questionFactory(index)];
-        question[3] = `${question[0]}-${group.length + 1}`;
         group.push(question);
         index += 1;
     }
@@ -556,20 +555,20 @@ function shuffleArray(items) {
     return [...items].sort(() => Math.random() - 0.5);
 }
 
-function createQuestion(question, answer, wrongAnswers, keySource = question) {
+function createQuestion(question, answer, wrongAnswers) {
     const answers = shuffleArray([answer, ...wrongAnswers]);
     const cleanQuestion = cleanQuestionText(question);
 
     return {
         question: cleanQuestion,
-        key: normalizeQuestionText(keySource),
+        key: normalizeQuestionKey(cleanQuestion),
         answers,
         correct: answers.indexOf(answer)
     };
 }
 
 function buildQuestions(items) {
-    return items.map(([question, answer, wrongAnswers, keySource]) => createQuestion(question, answer, wrongAnswers, keySource));
+    return items.map(([question, answer, wrongAnswers]) => createQuestion(question, answer, wrongAnswers));
 }
 
 function createRoundQuestions(questions, memoryKey) {
@@ -613,6 +612,13 @@ function cleanQuestionText(question) {
 function normalizeQuestionText(question) {
     return cleanQuestionText(question)
         .replace(/\d+/g, "#")
+        .replace(/\s+/g, " ")
+        .trim()
+        .toLowerCase();
+}
+
+function normalizeQuestionKey(question) {
+    return cleanQuestionText(question)
         .replace(/\s+/g, " ")
         .trim()
         .toLowerCase();
