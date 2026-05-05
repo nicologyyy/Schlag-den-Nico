@@ -802,6 +802,7 @@ function createQuestion(question, answer, wrongAnswers) {
     return {
         question: cleanQuestion,
         key: normalizeQuestionKey(cleanQuestion),
+        baseKey: normalizeBaseQuestionKey(cleanQuestion),
         answers,
         correct: answers.indexOf(answer)
     };
@@ -814,11 +815,16 @@ function buildQuestions(items) {
 function createRoundQuestions(questions, memoryKey) {
     const uniqueQuestions = [];
     const usedQuestionKeys = new Set();
+    const usedBaseQuestionKeys = new Set();
     const recentQuestions = recentQuestionHistory[memoryKey] || [];
 
     shuffleArray(questions).forEach((question) => {
-        if (!usedQuestionKeys.has(question.key) && !recentQuestions.includes(question.key)) {
+        const recentKey = recentQuestions.includes(question.key);
+        const recentBaseKey = recentQuestions.includes(`base:${question.baseKey}`);
+
+        if (!usedQuestionKeys.has(question.key) && !usedBaseQuestionKeys.has(question.baseKey) && !recentKey && !recentBaseKey) {
             usedQuestionKeys.add(question.key);
+            usedBaseQuestionKeys.add(question.baseKey);
             uniqueQuestions.push(question);
         }
     });
@@ -828,8 +834,9 @@ function createRoundQuestions(questions, memoryKey) {
     }
 
     shuffleArray(questions).forEach((question) => {
-        if (!usedQuestionKeys.has(question.key)) {
+        if (!usedQuestionKeys.has(question.key) && !usedBaseQuestionKeys.has(question.baseKey)) {
             usedQuestionKeys.add(question.key);
+            usedBaseQuestionKeys.add(question.baseKey);
             uniqueQuestions.push(question);
         }
     });
@@ -839,8 +846,8 @@ function createRoundQuestions(questions, memoryKey) {
 
 function rememberRoundQuestions(memoryKey, questions) {
     const oldQuestions = recentQuestionHistory[memoryKey] || [];
-    const newQuestions = questions.map((question) => question.key);
-    const memoryLimit = RECENT_ROUND_MEMORY * 10;
+    const newQuestions = questions.flatMap((question) => [question.key, `base:${question.baseKey}`]);
+    const memoryLimit = RECENT_ROUND_MEMORY * 20;
 
     recentQuestionHistory[memoryKey] = [...oldQuestions, ...newQuestions].slice(-memoryLimit);
 }
@@ -862,6 +869,12 @@ function normalizeQuestionKey(question) {
         .replace(/\s+/g, " ")
         .trim()
         .toLowerCase();
+}
+
+function normalizeBaseQuestionKey(question) {
+    return normalizeQuestionKey(question)
+        .replace(/\s+schwerpunkt:\s+.*$/, "")
+        .replace(/\s+kontext\s+\S+\s+\d+:\s+.*$/, "");
 }
 
 const categories = Object.entries(questionData).map(([name, difficultyGroups]) => ({
