@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 body {
     font-family: Arial, sans-serif;
     background-color: #0f172a;
@@ -7,6 +11,8 @@ body {
     background-attachment: fixed;
     color: white;
     text-align: center;
+    margin: 0;
+    min-width: 0;
 }
 
 body.quiz-active,
@@ -231,6 +237,20 @@ body:not(.quiz-active) .answer-btn:first-child {
 @media (max-width: 760px) {
     .leaderboard-grid {
         grid-template-columns: 1fr;
+    }
+
+    #leaderboard {
+        width: min(100%, 96vw);
+        padding: 10px 8px;
+    }
+
+    #leaderboard table {
+        font-size: 11px;
+        min-width: 520px;
+    }
+
+    #leaderboard section {
+        overflow-x: auto;
     }
 
 }
@@ -464,6 +484,120 @@ body.result-screen #home-btn {
 @media (max-width: 760px) {
     body.quiz-active #answers {
         grid-template-columns: 1fr;
+    }
+
+    .quiz-container {
+        margin-top: 28px;
+        padding: 0 10px 20px;
+    }
+
+    body.quiz-active .quiz-container,
+    body.result-screen .quiz-container {
+        padding: 14px 10px 22px;
+    }
+
+    body.category-select .quiz-container {
+        justify-content: flex-start;
+        padding-top: 12vh;
+    }
+
+    body.quiz-active #question {
+        width: 100%;
+        margin: 0 auto 12px;
+        padding: 12px 14px;
+        font-size: 19px;
+    }
+
+    body.category-select #question {
+        font-size: 25px;
+    }
+
+    .result-screen #question {
+        width: 100%;
+        padding: 20px 16px;
+        font-size: 27px;
+    }
+
+    body.quiz-active #answers,
+    body.category-select #answers {
+        width: 100%;
+        gap: 10px;
+    }
+
+    body.quiz-active .answer-btn {
+        min-height: 54px;
+        padding: 12px 14px;
+        font-size: 16px;
+    }
+
+    body.category-select .answer-btn {
+        min-height: 58px;
+        font-size: 20px;
+    }
+
+    #difficulty-box {
+        width: 100%;
+        gap: 8px;
+    }
+
+    .difficulty-btn {
+        flex: 1 1 calc(50% - 8px);
+        min-width: 132px;
+        padding: 13px 10px;
+        font-size: 18px;
+    }
+
+    #game-info {
+        width: 100%;
+        gap: 8px;
+    }
+
+    #timer,
+    #opponent {
+        padding: 8px 10px;
+        font-size: 14px;
+    }
+
+    #scoreboard {
+        width: 100%;
+        padding: 8px;
+    }
+
+    body:not(.quiz-active) .answer-btn:first-child {
+        width: 100%;
+        font-size: 19px;
+    }
+}
+
+@media (max-width: 430px) {
+    body {
+        background-attachment: scroll;
+    }
+
+    #player-name {
+        width: 100%;
+    }
+
+    #name-box {
+        width: min(300px, 94vw);
+        margin-top: 0;
+    }
+
+    #leaderboard h2 {
+        font-size: 18px;
+    }
+
+    .leaderboard-filter-btn {
+        flex: 1 1 auto;
+    }
+
+    .difficulty-btn {
+        min-width: 0;
+        font-size: 16px;
+    }
+
+    body.quiz-active .answer-btn {
+        font-size: 15px;
     }
 }
 
