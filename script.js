@@ -937,7 +937,7 @@ function loadFacts() {
 
     stopConfetti();
     document.body.classList.remove("result-screen", "winner-screen", "loser-screen");
-    document.body.classList.remove("quiz-active");
+    document.body.classList.remove("quiz-active", "category-select");
     document.getElementById("next-btn").style.display = "inline-block";
     document.getElementById("next-btn").innerText = "Weiter";
     document.getElementById("home-btn").style.display = "none";
@@ -1026,7 +1026,7 @@ function showCategories() {
     const buttons = document.querySelectorAll(".answer-btn");
     categoryChoices = shuffleArray(categories).slice(0, 4);
 
-    document.body.classList.add("quiz-active");
+    document.body.classList.add("quiz-active", "category-select");
     document.getElementById("question").innerText = "Wähle eine Kategorie";
     document.getElementById("next-btn").style.display = "none";
     document.getElementById("home-btn").style.display = "none";
@@ -1183,6 +1183,8 @@ function handleTimeout() {
 function showQuestion() {
     const currentQuestion = roundQuestions[currentQuestionIndex];
     const buttons = document.querySelectorAll(".answer-btn");
+
+    document.body.classList.remove("category-select");
 
     if (currentQuestionIndex === 0 && !roundStartedAt) {
         roundStartedAt = Date.now();
