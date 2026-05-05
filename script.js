@@ -503,11 +503,10 @@ const difficultyLabels = {
 };
 
 function getNextFact() {
-    const factNumber = currentFactIndex + 1;
     const factText = facts[currentFactIndex];
 
     currentFactIndex = (currentFactIndex + 1) % facts.length;
-    return `Fakt ${factNumber}/${facts.length}: ${factText}`;
+    return factText;
 }
 
 function loadFacts() {
