@@ -481,6 +481,14 @@ body.result-screen #home-btn {
     margin-top: 8px;
 }
 
+body.result-screen #next-btn,
+body.result-screen #home-btn {
+    min-width: 168px;
+    padding: 15px 24px;
+    font-size: 18px;
+    font-weight: 900;
+}
+
 #feedback-box {
     display: none;
     width: min(560px, 94vw);
