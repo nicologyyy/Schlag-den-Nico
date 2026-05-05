@@ -238,7 +238,138 @@ function addGeneratedQuestions() {
     addMedicineQuestions();
     addHistoryQuestions();
     addTechQuestions();
+    hardenGeniusQuestions();
     ensureMinimumQuestionsPerCategory();
+}
+
+function hardenGeniusQuestions() {
+    const harderGeniusQuestions = {
+        "Allgemeinwissen": [
+            ["Welche Zahl ist die kleinste Carmichael-Zahl?", "561", ["341", "1105", "1729"]],
+            ["Welches chemische Element hat das Symbol Ir?", "Iridium", ["Indium", "Iod", "Eisen"]],
+            ["Wie heißt die Diskontinuität zwischen Erdkruste und Erdmantel?", "Mohorovičić-Diskontinuität", ["Gutenberg-Diskontinuität", "Lehmann-Diskontinuität", "Conrad-Diskontinuität"]],
+            ["Welche Hauptstadt liegt am Fluss Daugava?", "Riga", ["Vilnius", "Tallinn", "Minsk"]],
+            ["Wer bewies Fermats letzten Satz?", "Andrew Wiles", ["Terence Tao", "Grigori Perelman", "Kurt Gödel"]],
+            ["Welcher Mond des Neptun bewegt sich retrograd um den Planeten?", "Triton", ["Nereid", "Proteus", "Larissa"]],
+            ["Welcher Philosoph prägte den Begriff 'Ding an sich'?", "Immanuel Kant", ["David Hume", "Georg Wilhelm Friedrich Hegel", "Baruch de Spinoza"]],
+            ["Welche Sprache ist Amtssprache in Suriname?", "Niederländisch", ["Portugiesisch", "Französisch", "Englisch"]],
+            ["Welche mathematische Konstante beschreibt das Verhältnis eines Kreises zu seinem Umfang?", "Pi", ["Phi", "e", "Gamma"]],
+            ["Welches Mineral hat auf der Mohs-Skala die Härte 10?", "Diamant", ["Korund", "Topas", "Quarz"]],
+            ["Welche Stadt war Hauptstadt des Byzantinischen Reiches?", "Konstantinopel", ["Antiochia", "Alexandria", "Nikaia"]],
+            ["Wie heißt die kleinste Primzahl, die größer als 100 ist?", "101", ["103", "97", "107"]],
+            ["Welcher Ozean enthält den Kermadecgraben?", "Pazifischer Ozean", ["Atlantischer Ozean", "Indischer Ozean", "Arktischer Ozean"]],
+            ["Welcher Nobelpreis wird nicht in Stockholm verliehen?", "Friedensnobelpreis", ["Physik", "Chemie", "Medizin"]],
+            ["Welche Einheit misst die katalytische Aktivität im SI-System?", "Katal", ["Sievert", "Becquerel", "Weber"]]
+        ],
+        "Sport": [
+            ["Welche Schacheröffnung beginnt mit 1. e4 c5?", "Sizilianische Verteidigung", ["Französische Verteidigung", "Damengambit", "Spanische Partie"]],
+            ["Welcher Radklassiker endet traditionell im Velodrom von Roubaix?", "Paris-Roubaix", ["Mailand-Sanremo", "Lüttich-Bastogne-Lüttich", "Flandern-Rundfahrt"]],
+            ["Welche Nation gewann die Rugby-WM 1995?", "Südafrika", ["Neuseeland", "Australien", "England"]],
+            ["Welche olympische Bootsklasse bezeichnet ein Ruderboot mit einer Person und zwei Rudern?", "Einer", ["Zweier", "Vierer", "Achter"]],
+            ["Wer gewann 1972 das Schach-WM-Duell gegen Boris Spasski?", "Bobby Fischer", ["Anatoli Karpow", "Garry Kasparov", "Magnus Carlsen"]],
+            ["Welcher Begriff bezeichnet im Cricket drei Wickets mit drei aufeinanderfolgenden Würfen?", "Hattrick", ["Century", "Maiden", "Boundary"]],
+            ["Welche Stadt war 1924 Gastgeber der ersten Olympischen Winterspiele?", "Chamonix", ["St. Moritz", "Oslo", "Innsbruck"]],
+            ["Welcher Formel-1-Kurs trägt den Beinamen 'Grüne Hölle'?", "Nürburgring Nordschleife", ["Monza", "Silverstone", "Spa-Francorchamps"]],
+            ["Welche Tennis-Spielerin gewann 1988 alle vier Grand Slams und Olympia-Gold?", "Steffi Graf", ["Martina Navratilova", "Serena Williams", "Chris Evert"]],
+            ["Welche Disziplin im Bahnradsport stammt aus Japan und nutzt Schrittmacher-Runden?", "Keirin", ["Madison", "Omnium", "Scratch"]],
+            ["Welche Trophäe wird dem Sieger der British Open im Golf überreicht?", "Claret Jug", ["Ryder Cup", "Green Jacket", "Stanley Cup"]],
+            ["In welcher Sportart gibt es die Begriffe Oche und Checkout?", "Darts", ["Snooker", "Curling", "Bowling"]],
+            ["Welches Land gewann die erste Fußball-WM 1930?", "Uruguay", ["Argentinien", "Brasilien", "Italien"]],
+            ["Welche Schachfigur steht zu Beginn auf b1 und g1?", "Springer", ["Läufer", "Turm", "Dame"]],
+            ["Welche NBA-Franchise draftete Dirk Nowitzki ursprünglich 1998?", "Milwaukee Bucks", ["Dallas Mavericks", "Phoenix Suns", "Boston Celtics"]]
+        ],
+        "Musik": [
+            ["Wer komponierte die Oper 'Wozzeck'?", "Alban Berg", ["Richard Wagner", "Gustav Mahler", "Arnold Schönberg"]],
+            ["Welche Reihe aus allen zwölf Halbtönen ohne Wiederholung ist Grundlage der Zwölftontechnik?", "Zwölftonreihe", ["Pentatonik", "Kadenz", "Ostinato"]],
+            ["Welcher Komponist schrieb 'Le Sacre du printemps'?", "Igor Strawinsky", ["Sergei Prokofjew", "Claude Debussy", "Béla Bartók"]],
+            ["Welche Kirchentonart beginnt auf der weißen Klaviertaste F?", "Lydisch", ["Dorisch", "Phrygisch", "Äolisch"]],
+            ["Welcher Akkord besteht aus Grundton, großer Terz und übermäßiger Quinte?", "übermäßiger Dreiklang", ["verminderter Dreiklang", "Dur-Dreiklang", "Moll-Dreiklang"]],
+            ["Welche Taktart hat eine punktierte Viertel als Hauptzählzeit?", "6/8", ["4/4", "3/4", "2/2"]],
+            ["Wer komponierte 'Pierrot lunaire'?", "Arnold Schönberg", ["Anton Webern", "Alban Berg", "Paul Hindemith"]],
+            ["Welche Tonart hat sechs Kreuze?", "Fis-Dur", ["H-Dur", "E-Dur", "Cis-Dur"]],
+            ["Wie heißt die Umkehrung eines Quintintervalls?", "Quarte", ["Terz", "Sexte", "Septime"]],
+            ["Welcher Komponist schrieb die 'Missa solemnis' op. 123?", "Ludwig van Beethoven", ["Joseph Haydn", "Wolfgang Amadeus Mozart", "Franz Schubert"]],
+            ["Welche Form bezeichnet eine strenge Imitationsform mit Thema und Einsätzen?", "Fuge", ["Rondo", "Menuett", "Nocturne"]],
+            ["Welche Epoche verbindet man besonders mit Generalbass?", "Barock", ["Romantik", "Impressionismus", "Klassik"]],
+            ["Wer komponierte 'Ionisation' für Schlagzeugensemble?", "Edgard Varèse", ["John Cage", "Steve Reich", "Iannis Xenakis"]],
+            ["Welche Skala besteht nur aus Halbtonschritten?", "chromatische Skala", ["pentatonische Skala", "Ganztonleiter", "dorische Skala"]],
+            ["Welche Oper beginnt mit dem Akkord, der oft als 'Tristan-Akkord' bezeichnet wird?", "Tristan und Isolde", ["Parsifal", "Lohengrin", "Tannhäuser"]]
+        ],
+        "Film & Serien": [
+            ["Wer führte bei 'Jeanne Dielman' Regie?", "Chantal Akerman", ["Agnès Varda", "Claire Denis", "Jane Campion"]],
+            ["Welcher sowjetische Regisseur prägte die Montageteorie?", "Sergei Eisenstein", ["Andrei Tarkowski", "Dziga Vertov", "Vsevolod Pudovkin"]],
+            ["Wer führte bei 'Tokyo Story' Regie?", "Yasujirō Ozu", ["Akira Kurosawa", "Kenji Mizoguchi", "Nagisa Ōshima"]],
+            ["Welcher Film von F. W. Murnau gewann 1929 mehrere Oscars, aber nicht den Hauptpreis 'Outstanding Picture'?", "Sunrise", ["Nosferatu", "Faust", "Tabu"]],
+            ["Welche Bewegung prägte Filme wie 'Fahrraddiebe'?", "Italienischer Neorealismus", ["Nouvelle Vague", "Dogma 95", "Film noir"]],
+            ["Welcher Kameramann drehte viele Filme von Ingmar Bergman?", "Sven Nykvist", ["Vittorio Storaro", "Roger Deakins", "Gordon Willis"]],
+            ["Wie heißt der Filmschnitt, bei dem zwei Handlungen parallel montiert werden?", "Parallelmontage", ["Match Cut", "Jump Cut", "Freeze Frame"]],
+            ["Welcher Film gewann 1929 den ersten Oscar als bester Film?", "Wings", ["Metropolis", "Sunrise", "The Jazz Singer"]],
+            ["Welche Bewegung verband Lars von Trier mit Thomas Vinterberg?", "Dogma 95", ["Nouvelle Vague", "Neorealismus", "Cinéma vérité"]],
+            ["Wer führte bei 'Rashomon' Regie?", "Akira Kurosawa", ["Hayao Miyazaki", "Yasujiro Ozu", "Kenji Mizoguchi"]],
+            ["Welcher Kameramann ist eng mit 'Der Pate' verbunden?", "Gordon Willis", ["Sven Nykvist", "Vittorio Storaro", "Conrad Hall"]],
+            ["Welcher Film gewann 1951 in Venedig den Goldenen Löwen und stammt von Akira Kurosawa?", "Rashomon", ["Ikiru", "Die sieben Samurai", "Yojimbo"]],
+            ["Wie heißt die britische Dokumentarfilmbewegung um John Grierson?", "Documentary Movement", ["Free Cinema", "Kitchen Sink", "Cinema Novo"]],
+            ["Welcher Begriff beschreibt im Film noir eine desillusionierte männliche Hauptfigur?", "Antiheld", ["MacGuffin", "Auteur", "Foley Artist"]],
+            ["Wer komponierte häufig die Musik für Sergio Leones Western?", "Ennio Morricone", ["Nino Rota", "Bernard Herrmann", "John Williams"]]
+        ],
+        "Medizin": [
+            ["Welcher Rezeptortyp wird durch Adrenalin am Herzen stark aktiviert?", "Beta-1-Rezeptor", ["H1-Rezeptor", "NMDA-Rezeptor", "D2-Rezeptor"]],
+            ["Welcher Laborwert steigt typischerweise bei Myokardschaden?", "Troponin", ["Bilirubin", "Kreatinin", "Albumin"]],
+            ["Welches Enzym wandelt Angiotensin I in Angiotensin II um?", "ACE", ["Amylase", "Lipase", "Laktase"]],
+            ["Welcher Gerinnungsfaktor heißt Fibrinogen?", "Faktor I", ["Faktor II", "Faktor VIII", "Faktor X"]],
+            ["Welche Erkrankung wird durch Prionen verursacht?", "Creutzfeldt-Jakob-Krankheit", ["Masern", "Malaria", "Cholera"]],
+            ["Welche Struktur verbindet die beiden Großhirnhemisphären?", "Corpus callosum", ["Pons", "Thalamus", "Hypothalamus"]],
+            ["Welche Hirnhaut liegt direkt dem Gehirn an?", "Pia mater", ["Dura mater", "Arachnoidea", "Endoneurium"]],
+            ["Welcher Teil des Nephrons konzentriert den Urin stark mit?", "Henle-Schleife", ["Bowman-Kapsel", "Glomerulus", "Sammelrohr"]],
+            ["Welches Ion ist zentral für die Kopplung von Erregung und Kontraktion im Muskel?", "Calcium", ["Natrium", "Chlorid", "Lithium"]],
+            ["Welche Zellen produzieren Immunglobuline?", "Plasmazellen", ["Osteoklasten", "Eosinophile", "Fibroblasten"]],
+            ["Welcher Hirnnerv ist der Nervus trigeminus?", "V. Hirnnerv", ["III. Hirnnerv", "VII. Hirnnerv", "X. Hirnnerv"]],
+            ["Welche Struktur enthält die Schrittmacherzellen des Herzens?", "Sinusknoten", ["AV-Klappe", "Papillarmuskel", "Chordae tendineae"]],
+            ["Welcher Stoff ist das Endprodukt des Purinabbaus beim Menschen?", "Harnsäure", ["Harnstoff", "Kreatinin", "Bilirubin"]],
+            ["Welche Zellen bilden Myelin im zentralen Nervensystem?", "Oligodendrozyten", ["Schwann-Zellen", "Astrozyten", "Mikroglia"]],
+            ["Welche Blutgruppe gilt im AB0-System als Universalspender für Erythrozyten?", "0 negativ", ["AB positiv", "A negativ", "B positiv"]]
+        ],
+        "Geschichte": [
+            ["Welcher Historiker schrieb über den Peloponnesischen Krieg?", "Thukydides", ["Herodot", "Tacitus", "Polybius"]],
+            ["Welcher Vertrag teilte 843 das Frankenreich?", "Vertrag von Verdun", ["Vertrag von Tordesillas", "Frieden von Basel", "Prager Frieden"]],
+            ["Wer war der erste Kalif nach Mohammed?", "Abu Bakr", ["Ali", "Umar", "Uthman"]],
+            ["Welches Konzil begann 1545?", "Konzil von Trient", ["Konzil von Nicäa", "Konzil von Konstanz", "Laterankonzil"]],
+            ["Welche Schlacht stoppte 732 die Expansion der Umayyaden in Franken?", "Tours und Poitiers", ["Hastings", "Bouvines", "Crécy"]],
+            ["Welcher Orden wurde 1312 offiziell aufgehoben?", "Templerorden", ["Deutscher Orden", "Jesuitenorden", "Franziskanerorden"]],
+            ["Welche Reformen sind mit Preußen nach 1806 verbunden?", "Stein-Hardenberg-Reformen", ["Agrarreformen Solons", "Märzreformen", "Meiji-Restauration"]],
+            ["Welche Quelle berichtet vom Vesuvausbruch 79 n. Chr. in Briefen?", "Plinius der Jüngere", ["Cicero", "Seneca", "Livius"]],
+            ["Welche Epoche folgte in Europa auf die Karolingerzeit?", "Ottonenzeit", ["Renaissance", "Hellenismus", "Biedermeier"]],
+            ["Welcher Vertrag regelte 1494 die Einflusszonen Spaniens und Portugals?", "Vertrag von Tordesillas", ["Vertrag von Verdun", "Frieden von Utrecht", "Westfälischer Friede"]],
+            ["Welche Dynastie regierte China während Zheng Hes Expeditionen?", "Ming", ["Qing", "Song", "Yuan"]],
+            ["Welcher römische Kaiser erließ 212 die Constitutio Antoniniana?", "Caracalla", ["Diokletian", "Hadrian", "Trajan"]],
+            ["Welche Schlacht beendete 1071 die byzantinische Dominanz in Anatolien?", "Manzikert", ["Hattin", "Tours", "Nikopolis"]],
+            ["Wer war der letzte Kaiser des Weströmischen Reiches?", "Romulus Augustulus", ["Julius Nepos", "Honorius", "Majorian"]],
+            ["Welche Stadt war Zentrum der Abbasiden-Herrschaft nach 762?", "Bagdad", ["Damaskus", "Kairo", "Cordoba"]]
+        ],
+        "Technik": [
+            ["Was beschreibt CAP-Theorem?", "Abwägung in verteilten Systemen", ["Farbkalibrierung", "CPU-Kühlung", "HTML-Syntax"]],
+            ["Welche Struktur nutzt Dijkstra häufig zur effizienten Knotenauswahl?", "Prioritätswarteschlange", ["Ringpuffer", "Bitmap", "Stacktrace"]],
+            ["Was bedeutet Idempotenz bei einer Operation?", "mehrfaches Ausführen ändert das Ergebnis nicht weiter", ["Operation ist immer schnell", "Operation braucht Internet", "Operation löscht Speicher"]],
+            ["Was ist ein Deadlock?", "gegenseitiges Warten von Prozessen", ["kaputter Bildschirm", "defektes Kabel", "falscher DNS-Name"]],
+            ["Welche Schicht des OSI-Modells beschreibt TCP?", "Transportschicht", ["Bitübertragungsschicht", "Sitzungsschicht", "Darstellungsschicht"]],
+            ["Welche Eigenschaft soll ein kryptografischer Hash besonders haben?", "Kollisionsresistenz", ["hohe Lautstärke", "niedrige Auflösung", "sichtbare Kabelung"]],
+            ["Was ist eine ACID-Eigenschaft?", "Transaktionssicherheit", ["Bildkompression", "Akkuchemie", "Funkreichweite"]],
+            ["Welcher Konsensalgorithmus wird klassisch mit Lamport verbunden?", "Paxos", ["Dijkstra", "A*", "Huffman"]],
+            ["Welche Speicherverwaltungsstrategie sammelt nicht mehr erreichbare Objekte ein?", "Garbage Collection", ["Polling", "Sharding", "Throttling"]],
+            ["Welche Datenstruktur erlaubt Union-Find besonders effizient?", "Disjoint Set", ["Bloom Filter", "Trie", "Deque"]],
+            ["Was beschreibt ein Bloom Filter?", "probabilistische Mengenprüfung", ["verlustfreie Kompression", "Grafikkartenbus", "Netzwerktopologie"]],
+            ["Welche Normalform eliminiert transitive Abhängigkeiten?", "3. Normalform", ["1. Normalform", "Boyce-Codd ohne Schlüssel", "0. Normalform"]],
+            ["Welches Protokoll nutzt TLS typischerweise zur Zertifikatsprüfung im Web?", "HTTPS", ["SMTP ohne TLS", "FTP", "ARP"]],
+            ["Welches Problem löst ein Mutex?", "gegenseitigen Ausschluss", ["Bildskalierung", "DNS-Auflösung", "Datenkompression"]],
+            ["Welche Technik verteilt Daten horizontal auf mehrere Datenbankknoten?", "Sharding", ["Hashing", "Inlining", "Polling"]]
+        ]
+    };
+
+    Object.entries(harderGeniusQuestions).forEach(([category, questions]) => {
+        if (questionData[category]) {
+            questionData[category].genius = questions;
+        }
+    });
 }
 
 function addGeneralQuestions() {
