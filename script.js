@@ -1389,6 +1389,45 @@ function getGamertagKey(gamertag) {
     return normalizeGamertag(gamertag).toLowerCase();
 }
 
+const blockedGamertagParts = [
+    "hurensohn",
+    "huso",
+    "ficker",
+    "fick",
+    "nutte",
+    "nuttensohn",
+    "wichser",
+    "wixxer",
+    "schlampe",
+    "fotze",
+    "arschloch",
+    "bastard",
+    "spast",
+    "mongo",
+    "neger",
+    "nazi",
+    "hitler"
+];
+
+function normalizeGamertagForFilter(gamertag) {
+    return gamertag
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/0/g, "o")
+        .replace(/1/g, "i")
+        .replace(/3/g, "e")
+        .replace(/4/g, "a")
+        .replace(/5/g, "s")
+        .replace(/7/g, "t")
+        .replace(/[^a-z]/g, "");
+}
+
+function isGamertagBlocked(gamertag) {
+    const normalizedName = normalizeGamertagForFilter(gamertag);
+    return blockedGamertagParts.some((blockedPart) => normalizedName.includes(blockedPart));
+}
+
 async function ensurePlayerAccount() {
     if (playerId) {
         return true;
@@ -1399,6 +1438,11 @@ async function ensurePlayerAccount() {
 
     if (gamertag.length < 2) {
         updatePlayerAccountUI("Bitte gib zuerst einen Gamertag ein.");
+        return false;
+    }
+
+    if (isGamertagBlocked(gamertag)) {
+        updatePlayerAccountUI("Dieser Gamertag ist nicht erlaubt.");
         return false;
     }
 
