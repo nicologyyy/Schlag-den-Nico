@@ -28,27 +28,6 @@ body.result-screen .quiz-container {
     align-items: center;
 }
 
-body.quiz-active .show-title,
-body.result-screen .show-title {
-    display: none;
-}
-
-.show-title {
-    display: inline-block;
-    margin: 0 0 34px;
-    padding: 14px 54px 18px;
-    background: #facc15;
-    color: #111827;
-    border: 4px solid #fde68a;
-    border-radius: 999px;
-    font-family: "Comic Sans MS", "Trebuchet MS", Arial, sans-serif;
-    font-size: 42px;
-    font-weight: 900;
-    letter-spacing: 0;
-    box-shadow: 0 8px 0 #ca8a04, 0 18px 32px rgba(0, 0, 0, 0.35);
-    transform: rotate(-2deg);
-}
-
 #question {
     font-size: 22px;
     margin-bottom: 20px;
