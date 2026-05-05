@@ -469,6 +469,7 @@ let playerResults = [];
 let opponentResults = [];
 let questionAnswered = false;
 let factIntervalId = null;
+let currentFactIndex = 0;
 let timerIntervalId = null;
 let timeLeft = 15;
 const recentQuestionHistory = {};
@@ -501,13 +502,16 @@ const difficultyLabels = {
     genius: "Genie"
 };
 
-function shuffleFacts() {
-    return [...facts].sort(() => Math.random() - 0.5);
+function getNextFact() {
+    const factNumber = currentFactIndex + 1;
+    const factText = facts[currentFactIndex];
+
+    currentFactIndex = (currentFactIndex + 1) % facts.length;
+    return `Fakt ${factNumber}/${facts.length}: ${factText}`;
 }
 
 function loadFacts() {
     const buttons = document.querySelectorAll(".answer-btn");
-    const shuffledFacts = shuffleFacts();
 
     stopConfetti();
     document.body.classList.remove("result-screen", "winner-screen", "loser-screen");
@@ -525,7 +529,7 @@ function loadFacts() {
 
     buttons.forEach((button, index) => {
         button.style.display = index === 0 ? "block" : "none";
-        button.innerText = index === 0 ? shuffledFacts[0] : "";
+        button.innerText = index === 0 ? getNextFact() : "";
     });
 }
 
