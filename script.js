@@ -235,6 +235,10 @@ function addGeneratedQuestions() {
     addSportQuestions();
     addMusicQuestions();
     addFilmQuestions();
+    addMedicineQuestions();
+    addHistoryQuestions();
+    addTechQuestions();
+    ensureMinimumQuestionsPerCategory();
 }
 
 function addGeneralQuestions() {
@@ -368,11 +372,179 @@ function addFilmQuestions() {
     fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
 }
 
+function addMedicineQuestions() {
+    questionData["Medizin"] = {
+        easy: [
+            ["Welches Organ pumpt Blut durch den Körper?", "Herz", ["Magen", "Lunge", "Niere"]],
+            ["Welches Organ ist hauptsächlich für das Atmen zuständig?", "Lunge", ["Leber", "Milz", "Blase"]],
+            ["Wie nennt man die Knochen im Kopf?", "Schädel", ["Becken", "Rippe", "Wirbel"]],
+            ["Was misst ein Thermometer beim Menschen?", "Körpertemperatur", ["Blutgruppe", "Pulsfarbe", "Körpergröße"]],
+            ["Welche Flüssigkeit transportiert Sauerstoff im Körper?", "Blut", ["Speichel", "Galle", "Tränen"]],
+            ["Welcher Sinn nutzt die Augen?", "Sehen", ["Riechen", "Schmecken", "Hören"]],
+            ["Wie nennt man den Herzschlag, den man fühlen kann?", "Puls", ["Reflex", "Atmung", "Durst"]],
+            ["Was schützt viele Knochen an Gelenkflächen?", "Knorpel", ["Zahnschmelz", "Hornhaut", "Haarwurzel"]],
+            ["Welches Organ filtert Blut und bildet Urin?", "Niere", ["Magen", "Kehlkopf", "Bauchspeicheldrüse"]],
+            ["Welche Blutkörperchen transportieren Sauerstoff?", "rote Blutkörperchen", ["Blutplättchen", "Nervenzellen", "Hautzellen"]]
+        ],
+        medium: [
+            ["Wie heißt der medizinische Fachbegriff für Bluthochdruck?", "Hypertonie", ["Hypoglykämie", "Anämie", "Arthrose"]],
+            ["Welches Hormon senkt den Blutzucker?", "Insulin", ["Adrenalin", "Melatonin", "Thyroxin"]],
+            ["Welches Organ produziert Gallenflüssigkeit?", "Leber", ["Magen", "Niere", "Milz"]],
+            ["Wie heißt der größte Knochen des Menschen?", "Oberschenkelknochen", ["Oberarmknochen", "Schlüsselbein", "Schienbein"]],
+            ["Welche Zellen sind wichtig für die Blutgerinnung?", "Thrombozyten", ["Erythrozyten", "Neuronen", "Melanozyten"]],
+            ["Wie nennt man eine Entzündung der Bronchien?", "Bronchitis", ["Gastritis", "Dermatitis", "Nephritis"]],
+            ["Welches Vitamin bildet der Körper mit Sonnenlicht?", "Vitamin D", ["Vitamin C", "Vitamin K", "Vitamin B12"]],
+            ["Was ist die Hauptaufgabe der Alveolen?", "Gasaustausch", ["Blutgerinnung", "Verdauung", "Hormonbildung"]],
+            ["Wie heißt ein zu niedriger Blutzucker?", "Hypoglykämie", ["Hypertonie", "Tachykardie", "Skoliose"]],
+            ["Welches Organ enthält die Langerhans-Inseln?", "Bauchspeicheldrüse", ["Leber", "Schilddrüse", "Milz"]]
+        ],
+        hard: [
+            ["Welcher Nerv steuert große Teile des Parasympathikus?", "Nervus vagus", ["Nervus opticus", "Nervus facialis", "Nervus radialis"]],
+            ["Wie heißt die kleinste funktionelle Einheit der Niere?", "Nephron", ["Neuron", "Alveole", "Osteon"]],
+            ["Welches Antibiotikum gehört zu den Betalaktamen?", "Penicillin", ["Ibuprofen", "Metformin", "Heparin"]],
+            ["Welche Herzklappe liegt zwischen linkem Vorhof und linker Kammer?", "Mitralklappe", ["Pulmonalklappe", "Trikuspidalklappe", "Aortenklappe"]],
+            ["Wie heißt der erste Halswirbel?", "Atlas", ["Axis", "Sacrum", "Sternum"]],
+            ["Welcher Blutwert zeigt häufig eine Entzündung an?", "CRP", ["HbA1c", "TSH", "LDL"]],
+            ["Welcher Erreger verursacht Tuberkulose?", "Mycobacterium tuberculosis", ["Streptococcus pyogenes", "Candida albicans", "Norovirus"]],
+            ["Wie nennt man eine Minderdurchblutung von Gewebe?", "Ischämie", ["Ödem", "Embolie", "Fibrose"]],
+            ["Welches Medikament hemmt die Blutgerinnung?", "Heparin", ["Paracetamol", "Loratadin", "Omeprazol"]],
+            ["Welcher Teil des Gehirns koordiniert Bewegungen?", "Kleinhirn", ["Hypophyse", "Balken", "Hippocampus"]]
+        ],
+        genius: [
+            ["Welcher Rezeptortyp wird durch Adrenalin am Herzen stark aktiviert?", "Beta-1-Rezeptor", ["H1-Rezeptor", "NMDA-Rezeptor", "D2-Rezeptor"]],
+            ["Welche Struktur verbindet die beiden Großhirnhemisphären?", "Corpus callosum", ["Pons", "Thalamus", "Hypothalamus"]],
+            ["Welcher Laborwert steigt typischerweise bei Myokardschaden?", "Troponin", ["Bilirubin", "Kreatinin", "Albumin"]],
+            ["Welches Enzym wandelt Angiotensin I in Angiotensin II um?", "ACE", ["Amylase", "Lipase", "Laktase"]],
+            ["Welche Zellen produzieren Antikörper?", "Plasmazellen", ["Osteoklasten", "Eosinophile", "Fibroblasten"]],
+            ["Welche Hirnhaut liegt direkt dem Gehirn an?", "Pia mater", ["Dura mater", "Arachnoidea", "Endoneurium"]],
+            ["Welcher Gerinnungsfaktor heißt Fibrinogen?", "Faktor I", ["Faktor II", "Faktor VIII", "Faktor X"]],
+            ["Welches Ion ist zentral für die Muskelkontraktion?", "Calcium", ["Chlorid", "Fluorid", "Lithium"]],
+            ["Welche Erkrankung wird durch Prionen verursacht?", "Creutzfeldt-Jakob-Krankheit", ["Masern", "Malaria", "Cholera"]],
+            ["Welcher Teil des Nephrons konzentriert den Urin stark mit?", "Henle-Schleife", ["Bowman-Kapsel", "Glomerulus", "Sammelrohr"]]
+        ]
+    };
+}
+
+function addHistoryQuestions() {
+    questionData["Geschichte"] = {
+        easy: [
+            ["Wer war der erste Bundeskanzler der Bundesrepublik Deutschland?", "Konrad Adenauer", ["Willy Brandt", "Helmut Kohl", "Gerhard Schröder"]],
+            ["In welchem Jahr fiel die Berliner Mauer?", "1989", ["1975", "1999", "2001"]],
+            ["Welche Stadt war im antiken Rom das Zentrum des Reiches?", "Rom", ["Athen", "Sparta", "Karthago"]],
+            ["Wer entdeckte 1492 für Europa Amerika?", "Christoph Kolumbus", ["Marco Polo", "James Cook", "Vasco da Gama"]],
+            ["Wie hieß das alte Ägypten bekannte Herrscheramt?", "Pharao", ["Kaiser", "Konsul", "Zar"]],
+            ["Welcher Krieg endete 1945 in Europa?", "Zweiter Weltkrieg", ["Erster Weltkrieg", "Dreißigjähriger Krieg", "Kalter Krieg"]],
+            ["Welche Epoche kam nach dem Mittelalter?", "Neuzeit", ["Steinzeit", "Bronzezeit", "Antike"]],
+            ["Welche Stadt wurde durch Pompeji bekannt?", "Pompeji", ["Florenz", "Mailand", "Turin"]],
+            ["Wer war Napoleon Bonaparte?", "französischer Kaiser", ["spanischer Maler", "römischer Senator", "deutscher Kanzler"]],
+            ["Welche Mauer teilte Berlin?", "Berliner Mauer", ["Chinesische Mauer", "Hadrianswall", "Stadtmauer Köln"]]
+        ],
+        medium: [
+            ["Wann begann der Erste Weltkrieg?", "1914", ["1905", "1929", "1939"]],
+            ["Welcher Vertrag beendete 1919 formal den Ersten Weltkrieg mit Deutschland?", "Versailler Vertrag", ["Westfälischer Friede", "Maastrichter Vertrag", "Wiener Kongress"]],
+            ["Welche Revolution fand 1789 statt?", "Französische Revolution", ["Russische Revolution", "Industrielle Revolution", "Novemberrevolution"]],
+            ["Wer war der erste römische Kaiser?", "Augustus", ["Caesar", "Nero", "Trajan"]],
+            ["Welche Hanse-Stadt liegt an der Trave?", "Lübeck", ["Augsburg", "Trier", "Ulm"]],
+            ["Welches Reich wurde von Osman I. begründet?", "Osmanisches Reich", ["Byzantinisches Reich", "Frankenreich", "Mongolenreich"]],
+            ["Wer leitete die Reformation in Wittenberg ein?", "Martin Luther", ["Johannes Gutenberg", "Jan Hus", "Thomas Müntzer"]],
+            ["Welches Ereignis markiert 1517 symbolisch den Beginn der Reformation?", "Thesenanschlag", ["Investiturstreit", "Kreuzzug", "Augsburger Reichstag"]],
+            ["Welche Dynastie herrschte lange in Österreich?", "Habsburger", ["Bourbonen", "Tudors", "Romanows"]],
+            ["Was war die Weimarer Republik?", "erste deutsche Demokratie", ["römische Provinz", "französische Kolonie", "mittelalterlicher Orden"]]
+        ],
+        hard: [
+            ["Welche Schlacht fand 1815 statt?", "Waterloo", ["Austerlitz", "Trafalgar", "Sedan"]],
+            ["Wer war Reichskanzler bei der Reichsgründung 1871?", "Otto von Bismarck", ["Friedrich Ebert", "Theobald von Bethmann Hollweg", "Paul von Hindenburg"]],
+            ["Welcher Friede beendete 1648 den Dreißigjährigen Krieg?", "Westfälischer Friede", ["Prager Frieden", "Hubertusburger Frieden", "Frieden von Tilsit"]],
+            ["Welche Kultur baute Machu Picchu?", "Inka", ["Maya", "Azteken", "Olmeken"]],
+            ["Welcher byzantinische Kaiser ließ die Hagia Sophia bauen?", "Justinian I.", ["Konstantin XI.", "Herakleios", "Leo III."]],
+            ["Welche Konferenz regelte 1884/85 Kolonialfragen in Afrika?", "Berliner Kongokonferenz", ["Potsdamer Konferenz", "Konferenz von Jalta", "Wiener Kongress"]],
+            ["Wer war der letzte deutsche Kaiser?", "Wilhelm II.", ["Wilhelm I.", "Friedrich III.", "Karl V."]],
+            ["Welche Seeschlacht fand 1805 statt?", "Trafalgar", ["Lepanto", "Skagerrak", "Salamis"]],
+            ["Welcher Codex ist mit Babylon verbunden?", "Codex Hammurapi", ["Code civil", "Zwölftafelgesetz", "Sachsenspiegel"]],
+            ["Welche Bewegung entstand im 18. Jahrhundert mit Vernunft und Kritik?", "Aufklärung", ["Romantik", "Expressionismus", "Barock"]]
+        ],
+        genius: [
+            ["Welcher Historiker schrieb über den Peloponnesischen Krieg?", "Thukydides", ["Herodot", "Tacitus", "Polybius"]],
+            ["Welcher Vertrag teilte 843 das Frankenreich?", "Vertrag von Verdun", ["Vertrag von Tordesillas", "Frieden von Basel", "Prager Frieden"]],
+            ["Welche Dynastie regierte China beim Bau vieler Ming-Vasen?", "Ming", ["Qing", "Han", "Tang"]],
+            ["Wer war der erste Kalif nach Mohammed?", "Abu Bakr", ["Ali", "Umar", "Uthman"]],
+            ["Welches Konzil begann 1545?", "Konzil von Trient", ["Konzil von Nicäa", "Konzil von Konstanz", "Laterankonzil"]],
+            ["Welche Schlacht stoppte 732 die Expansion der Umayyaden in Franken?", "Tours und Poitiers", ["Hastings", "Bouvines", "Crécy"]],
+            ["Welcher Orden wurde 1312 offiziell aufgehoben?", "Templerorden", ["Deutscher Orden", "Jesuitenorden", "Franziskanerorden"]],
+            ["Welche Reformen sind mit Preußen nach 1806 verbunden?", "Stein-Hardenberg-Reformen", ["Agrarreformen Solons", "Märzreformen", "Meiji-Restauration"]],
+            ["Welche Quelle berichtet vom Ausbruch des Vesuv 79 n. Chr. in Briefen?", "Plinius der Jüngere", ["Cicero", "Seneca", "Livius"]],
+            ["Welche Epoche folgte in Europa auf die Karolingerzeit?", "Ottonenzeit", ["Renaissance", "Hellenismus", "Biedermeier"]]
+        ]
+    };
+}
+
+function addTechQuestions() {
+    questionData["Technik"] = {
+        easy: [
+            ["Wofür steht WLAN?", "drahtloses Netzwerk", ["Druckertinte", "Festplatte", "Stromkabel"]],
+            ["Welches Gerät zeigt Bilder am Computer an?", "Monitor", ["Router", "Mauspad", "Akku"]],
+            ["Was macht ein Passwort?", "Zugang schützen", ["Bild heller machen", "Ton verstärken", "Papier scannen"]],
+            ["Welche Taste löscht oft Zeichen links vom Cursor?", "Backspace", ["Shift", "Alt", "Tab"]],
+            ["Welches Gerät verbindet ein Heimnetz oft mit dem Internet?", "Router", ["Beamer", "Scanner", "Lautsprecher"]],
+            ["Was ist ein Akku?", "wiederaufladbarer Energiespeicher", ["Bildschirm", "Kabelnorm", "Programmiersprache"]],
+            ["Welche Datei-Endung steht oft für Bilder?", "jpg", ["mp3", "exe", "zip"]],
+            ["Was ist ein Touchscreen?", "berührungsempfindlicher Bildschirm", ["Netzwerkkabel", "Lüfter", "Mikrofonständer"]],
+            ["Was macht ein Drucker?", "Dokumente ausgeben", ["Daten verschlüsseln", "Luft kühlen", "Fotos löschen"]],
+            ["Welche Einheit misst elektrische Spannung?", "Volt", ["Liter", "Meter", "Gramm"]]
+        ],
+        medium: [
+            ["Wofür steht CPU?", "Central Processing Unit", ["Computer Power USB", "Central Pixel Unit", "Control Print Utility"]],
+            ["Welche Einheit misst Datenmenge?", "Byte", ["Watt", "Volt", "Newton"]],
+            ["Was ist RAM?", "Arbeitsspeicher", ["Grafikkarte", "Netzteil", "Gehäuse"]],
+            ["Welches Protokoll lädt Webseiten verschlüsselt?", "HTTPS", ["FTP", "SMTP", "POP3"]],
+            ["Was macht eine SSD?", "Daten speichern", ["Strom messen", "Bilder projizieren", "Ton filtern"]],
+            ["Welche Sprache läuft direkt im Browser?", "JavaScript", ["SQL", "Bash", "Markdown"]],
+            ["Was ist ein QR-Code?", "zweidimensionaler Code", ["Tonformat", "Akkuart", "Bildschirmtyp"]],
+            ["Was bedeutet Open Source?", "Quellcode ist öffentlich einsehbar", ["Programm ist immer kostenlos", "Datei ist verschlüsselt", "Hardware ist kabellos"]],
+            ["Welche Technik nutzt Bluetooth?", "Funkverbindung über kurze Distanz", ["Glasfaserkabel", "Satellitenorbit", "Wasserkühlung"]],
+            ["Was ist ein Backup?", "Sicherheitskopie", ["Passwortmanager", "Ladegerät", "Grafikfilter"]]
+        ],
+        hard: [
+            ["Welche Datenstruktur arbeitet nach LIFO?", "Stack", ["Queue", "Heap", "Graph"]],
+            ["Welcher Port wird häufig für HTTPS genutzt?", "443", ["21", "25", "110"]],
+            ["Was beschreibt Big-O-Notation?", "Algorithmus-Komplexität", ["Bildauflösung", "Akkulaufzeit", "Farbtemperatur"]],
+            ["Welches Bauteil wandelt Wechselstrom im PC in passende Gleichspannungen?", "Netzteil", ["RAM", "Mainboard-Batterie", "Kühlkörper"]],
+            ["Was ist eine IP-Adresse?", "Adresse eines Netzwerkgeräts", ["Dateiendung", "Prozessor-Takt", "Bildformat"]],
+            ["Welcher Speicher ist meist flüchtig?", "RAM", ["SSD", "Blu-ray", "USB-Stick"]],
+            ["Was macht DNS?", "Namen in IP-Adressen auflösen", ["Bilder komprimieren", "Strom speichern", "Dateien löschen"]],
+            ["Welche Datenbank-Sprache nutzt SELECT?", "SQL", ["HTML", "CSS", "JSON"]],
+            ["Was ist ein Hash?", "Prüfwert aus Daten", ["Bildschirmkabel", "Roboterarm", "Netzteil"]],
+            ["Welche Verschlüsselung nutzt ein öffentliches und privates Schlüsselpaar?", "asymmetrische Verschlüsselung", ["Rotationsdruck", "Farbmanagement", "Analogfunk"]]
+        ],
+        genius: [
+            ["Welches Problem beschreibt ein Race Condition?", "zeitabhängiger Zugriffskonflikt", ["zu wenig Speicherplatz", "falsche Farbtiefe", "langsamer Lüfter"]],
+            ["Was ist eine Normalform in Datenbanken?", "Regel zur Tabellenstruktur", ["Bildschirmmodus", "Akkustandard", "Netzwerkstecker"]],
+            ["Welche Struktur nutzt Dijkstra häufig zur effizienten Knotenauswahl?", "Prioritätswarteschlange", ["Ringpuffer", "Bitmap", "Stacktrace"]],
+            ["Was bedeutet Idempotenz bei einer Operation?", "mehrfaches Ausführen ändert das Ergebnis nicht weiter", ["Operation ist immer schnell", "Operation braucht Internet", "Operation löscht Speicher"]],
+            ["Was ist ein Deadlock?", "gegenseitiges Warten von Prozessen", ["kaputter Bildschirm", "defektes Kabel", "falscher DNS-Name"]],
+            ["Welche Schicht des OSI-Modells beschreibt TCP?", "Transportschicht", ["Bitübertragungsschicht", "Sitzungsschicht", "Darstellungsschicht"]],
+            ["Was ist ein Heap in der Speicherverwaltung?", "dynamischer Speicherbereich", ["Tastenkürzel", "Displaytyp", "Netzwerkdose"]],
+            ["Welche Eigenschaft soll ein kryptografischer Hash besonders haben?", "Kollisionsresistenz", ["hohe Lautstärke", "niedrige Auflösung", "sichtbare Kabelung"]],
+            ["Was ist eine ACID-Eigenschaft?", "Transaktionssicherheit", ["Bildkompression", "Akkuchemie", "Funkreichweite"]],
+            ["Was beschreibt CAP-Theorem?", "Abwägung in verteilten Systemen", ["Farbkalibrierung", "CPU-Kühlung", "HTML-Syntax"]]
+        ]
+    };
+}
+
+function ensureMinimumQuestionsPerCategory() {
+    Object.values(questionData).forEach((groups) => {
+        Object.values(groups).forEach((group) => {
+            fillToTarget(group, (index) => group[index % group.length]);
+        });
+    });
+}
+
 function fillToTarget(group, questionFactory) {
     let index = 0;
 
     while (group.length < QUESTIONS_PER_DIFFICULTY) {
-        const question = questionFactory(index);
+        const question = [...questionFactory(index)];
+        question[3] = `${question[0]}-${group.length + 1}`;
         group.push(question);
         index += 1;
     }
@@ -384,20 +556,20 @@ function shuffleArray(items) {
     return [...items].sort(() => Math.random() - 0.5);
 }
 
-function createQuestion(question, answer, wrongAnswers) {
+function createQuestion(question, answer, wrongAnswers, keySource = question) {
     const answers = shuffleArray([answer, ...wrongAnswers]);
     const cleanQuestion = cleanQuestionText(question);
 
     return {
         question: cleanQuestion,
-        key: normalizeQuestionText(cleanQuestion),
+        key: normalizeQuestionText(keySource),
         answers,
         correct: answers.indexOf(answer)
     };
 }
 
 function buildQuestions(items) {
-    return items.map(([question, answer, wrongAnswers]) => createQuestion(question, answer, wrongAnswers));
+    return items.map(([question, answer, wrongAnswers, keySource]) => createQuestion(question, answer, wrongAnswers, keySource));
 }
 
 function createRoundQuestions(questions, memoryKey) {
@@ -458,6 +630,7 @@ const categories = Object.entries(questionData).map(([name, difficultyGroups]) =
 
 let quizStarted = false;
 let selectedCategory = null;
+let categoryChoices = [];
 let selectedDifficulty = "easy";
 let currentQuestionIndex = 0;
 let roundQuestions = [];
@@ -600,6 +773,7 @@ function selectDifficulty(difficulty) {
 
 function showCategories() {
     const buttons = document.querySelectorAll(".answer-btn");
+    categoryChoices = shuffleArray(categories).slice(0, 4);
 
     document.body.classList.add("quiz-active");
     document.getElementById("question").innerText = "Wähle eine Kategorie";
@@ -614,7 +788,7 @@ function showCategories() {
 
     buttons.forEach((button, index) => {
         button.style.display = "block";
-        button.innerText = categories[index].name;
+        button.innerText = categoryChoices[index].name;
         button.classList.remove("correct", "wrong");
         button.disabled = false;
     });
@@ -904,6 +1078,7 @@ function goHome() {
     stopTimer();
     quizStarted = false;
     selectedCategory = null;
+    categoryChoices = [];
     roundQuestions = [];
     currentQuestionIndex = 0;
     score = 0;
@@ -936,6 +1111,7 @@ function saveLeaderboardEntry() {
     const usedSeconds = roundStartedAt ? Math.max(1, Math.round((Date.now() - roundStartedAt) / 1000)) : 0;
     const entry = {
         name: playerName,
+        category: selectedCategory ? selectedCategory.name : "-",
         date: now.toLocaleDateString("de-DE"),
         usedTime: formatUsedTime(usedSeconds),
         difficulty: difficultyLabels[selectedDifficulty],
@@ -957,7 +1133,7 @@ function updateLeaderboard() {
     leaderboardBody.innerHTML = "";
 
     if (!leaderboard.length) {
-        const emptyRow = createLeaderboardMessageRow("Noch keine Spiele", 6);
+        const emptyRow = createLeaderboardMessageRow("Noch keine Spiele", 7);
         leaderboardBody.appendChild(emptyRow);
         return;
     }
@@ -969,14 +1145,12 @@ function updateLeaderboard() {
 
 async function saveOnlineLeaderboardEntry(entry) {
     try {
-        const response = await fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}`, {
-            method: "POST",
-            headers: getSupabaseHeaders({
-                "Content-Type": "application/json",
-                Prefer: "return=minimal"
-            }),
-            body: JSON.stringify(entry)
-        });
+        let response = await postOnlineLeaderboardEntry(entry);
+
+        if (!response.ok && entry.category) {
+            const { category, ...entryWithoutCategory } = entry;
+            response = await postOnlineLeaderboardEntry(entryWithoutCategory);
+        }
 
         if (!response.ok) {
             throw new Error("Online-Bestenliste konnte nicht gespeichert werden.");
@@ -988,6 +1162,17 @@ async function saveOnlineLeaderboardEntry(entry) {
     }
 }
 
+async function postOnlineLeaderboardEntry(entry) {
+    return fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}`, {
+            method: "POST",
+            headers: getSupabaseHeaders({
+                "Content-Type": "application/json",
+                Prefer: "return=minimal"
+            }),
+            body: JSON.stringify(entry)
+    });
+}
+
 async function updateOnlineLeaderboard() {
     const onlineLeaderboardBody = document.getElementById("online-leaderboard-body");
 
@@ -996,13 +1181,15 @@ async function updateOnlineLeaderboard() {
     }
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online...", 5));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online...", 6));
 
     try {
         const difficultyFilter = `&difficulty=eq.${encodeURIComponent(selectedOnlineLeaderboard)}`;
-        const response = await fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}?select=name,date,usedTime,difficulty,points${difficultyFilter}&order=points.desc&limit=10`, {
-            headers: getSupabaseHeaders()
-        });
+        let response = await fetchOnlineLeaderboard("name,category,date,usedTime,difficulty,points", difficultyFilter);
+
+        if (!response.ok) {
+            response = await fetchOnlineLeaderboard("name,date,usedTime,difficulty,points", difficultyFilter);
+        }
 
         if (!response.ok) {
             throw new Error("Online-Bestenliste nicht erreichbar.");
@@ -1012,7 +1199,7 @@ async function updateOnlineLeaderboard() {
         onlineLeaderboardBody.innerHTML = "";
 
         if (!leaderboard.length) {
-            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spiele", 5));
+            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spiele", 6));
             return;
         }
 
@@ -1022,6 +1209,12 @@ async function updateOnlineLeaderboard() {
     } catch {
         showOnlineLeaderboardMessage("Online-Tabelle noch nicht eingerichtet");
     }
+}
+
+function fetchOnlineLeaderboard(selectFields, difficultyFilter) {
+    return fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}?select=${selectFields}${difficultyFilter}&order=points.desc&limit=10`, {
+        headers: getSupabaseHeaders()
+    });
 }
 
 function selectOnlineLeaderboard(filter) {
@@ -1046,13 +1239,14 @@ function showOnlineLeaderboardMessage(message) {
     const onlineLeaderboardBody = document.getElementById("online-leaderboard-body");
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message, 5));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message, 6));
 }
 
 function createLeaderboardRow(entry, index, showDifficulty) {
     const row = document.createElement("tr");
     const rankCell = document.createElement("td");
     const nameCell = document.createElement("td");
+    const categoryCell = document.createElement("td");
     const dateCell = document.createElement("td");
     const usedTimeCell = document.createElement("td");
     const pointsCell = document.createElement("td");
@@ -1060,6 +1254,7 @@ function createLeaderboardRow(entry, index, showDifficulty) {
 
     rankCell.innerText = index + 1;
     nameCell.innerText = entry.name;
+    categoryCell.innerText = entry.category || "-";
     dateCell.innerText = entry.date;
     usedTimeCell.innerText = entry.usedTime || entry.time || "-";
     pointsCell.innerText = entry.points;
@@ -1067,6 +1262,7 @@ function createLeaderboardRow(entry, index, showDifficulty) {
 
     row.appendChild(rankCell);
     row.appendChild(nameCell);
+    row.appendChild(categoryCell);
     row.appendChild(dateCell);
     row.appendChild(usedTimeCell);
     row.appendChild(pointsCell);
@@ -1125,7 +1321,7 @@ function selectAnswer(answerIndex) {
     }
 
     if (!selectedCategory) {
-        selectedCategory = categories[answerIndex];
+        selectedCategory = categoryChoices[answerIndex];
         const memoryKey = `${selectedCategory.name}-${selectedDifficulty}`;
         roundQuestions = createRoundQuestions(selectedCategory.questions[selectedDifficulty], memoryKey);
         rememberRoundQuestions(memoryKey, roundQuestions);
