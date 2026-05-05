@@ -227,8 +227,8 @@ const questionData = {
     }
 };
 
-const QUESTIONS_PER_DIFFICULTY = 50;
-const RECENT_ROUND_MEMORY = 5;
+const QUESTIONS_PER_DIFFICULTY = 200;
+const RECENT_ROUND_MEMORY = 15;
 
 function addGeneratedQuestions() {
     addGeneralQuestions();
@@ -698,22 +698,96 @@ function addTechQuestions() {
 }
 
 function ensureMinimumQuestionsPerCategory() {
-    Object.values(questionData).forEach((groups) => {
-        Object.values(groups).forEach((group) => {
-            fillToTarget(group, (index) => group[index % group.length]);
+    Object.entries(questionData).forEach(([categoryName, groups]) => {
+        Object.entries(groups).forEach(([difficulty, group]) => {
+            fillToTarget(group, createQuestionExpansionFactory(categoryName, difficulty, group));
         });
     });
 }
 
 function fillToTarget(group, questionFactory) {
     let index = 0;
+    const usedQuestionTexts = new Set(group.map((question) => question[0]));
 
     while (group.length < QUESTIONS_PER_DIFFICULTY) {
         const question = [...questionFactory(index)];
+        let variantIndex = 1;
+
+        while (usedQuestionTexts.has(question[0])) {
+            variantIndex += 1;
+            question[0] = `${questionFactory(index)[0]} Zusatzrunde ${variantIndex}`;
+        }
+
+        usedQuestionTexts.add(question[0]);
         group.push(question);
         index += 1;
     }
 }
+
+function createQuestionExpansionFactory(categoryName, difficulty, group) {
+    const baseQuestions = group.map((question) => [...question]);
+    const contexts = questionExpansionContexts[categoryName] || questionExpansionContexts.default;
+    const difficultyContext = {
+        easy: "Einfach",
+        medium: "Mittel",
+        hard: "Schwer",
+        genius: "Genie"
+    }[difficulty] || difficulty;
+
+    return (index) => {
+        const baseQuestion = baseQuestions[index % baseQuestions.length];
+        const cycle = Math.floor(index / baseQuestions.length);
+        const context = contexts[(index + cycle) % contexts.length];
+        const questionText = baseQuestion[0];
+        const expandedQuestion = cycle === 0
+            ? `${questionText} Schwerpunkt: ${context}.`
+            : `${questionText} Kontext ${difficultyContext} ${cycle + 1}: ${context}.`;
+
+        return [expandedQuestion, baseQuestion[1], [...baseQuestion[2]]];
+    };
+}
+
+const questionExpansionContexts = {
+    Allgemeinwissen: [
+        "Geografie", "Naturwissenschaft", "Weltgeschichte", "Sprache", "Kultur",
+        "Mathematik", "Astronomie", "Europa", "Technik", "Gesellschaft",
+        "Philosophie", "Rekorde", "Hauptstaedte", "Biologie", "Physik"
+    ],
+    Sport: [
+        "Regelkunde", "Olympia", "Sportgeschichte", "Weltmeisterschaften", "bekannte Sportler",
+        "Taktik", "Turniere", "Vereine", "Rekorde", "Sportbegriffe",
+        "Radsport", "Wintersport", "Tennis", "Motorsport", "Mannschaftssport"
+    ],
+    Musik: [
+        "Musiktheorie", "Komponisten", "Instrumente", "Oper", "Harmonielehre",
+        "Rhythmus", "Musikgeschichte", "Jazz", "Klassik", "Popkultur",
+        "Tonarten", "Formenlehre", "Stimmen", "Notation", "Moderne Musik"
+    ],
+    "Film & Serien": [
+        "Regie", "Filmpreise", "Filmgeschichte", "Serienwissen", "Schnitt",
+        "Kameratechnik", "Genres", "Drehbuch", "Schauspiel", "Filmbewegungen",
+        "Klassiker", "Animation", "Soundtrack", "Produktion", "Kultfilme"
+    ],
+    Medizin: [
+        "Anatomie", "Physiologie", "Pharmakologie", "Diagnostik", "Neurologie",
+        "Kardiologie", "Immunologie", "Laborwerte", "Mikrobiologie", "Notfallmedizin",
+        "Endokrinologie", "Niere", "Atmung", "Blut", "Zellbiologie"
+    ],
+    Geschichte: [
+        "Antike", "Mittelalter", "Neuzeit", "Reformation", "Kolonialgeschichte",
+        "Revolutionen", "Vertraege", "Dynastien", "Kriege", "Quellenkunde",
+        "Imperien", "Europa", "Asien", "Herrscher", "Ideengeschichte"
+    ],
+    Technik: [
+        "Netzwerke", "Algorithmen", "Datenbanken", "Kryptografie", "Betriebssysteme",
+        "Webtechnik", "Hardware", "Softwarearchitektur", "Speicher", "Verteilte Systeme",
+        "Sicherheit", "Programmierkonzepte", "Protokolle", "Datenstrukturen", "Cloud"
+    ],
+    default: [
+        "Grundwissen", "Expertenwissen", "Regeln", "Geschichte", "Begriffe",
+        "Praxis", "Theorie", "Rekorde", "Technik", "Personen"
+    ]
+};
 
 addGeneratedQuestions();
 
