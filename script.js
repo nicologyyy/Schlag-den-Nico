@@ -642,8 +642,8 @@ let currentQuestionIndex = 0;
 let roundQuestions = [];
 let score = 0;
 let opponentScore = 0;
-let playerPoints = 0;
-let opponentPoints = 0;
+let playerMoney = 0;
+let opponentMoney = 0;
 let playerResults = [];
 let opponentResults = [];
 let questionAnswered = false;
@@ -653,11 +653,15 @@ let timerIntervalId = null;
 let timeLeft = 15;
 const recentQuestionHistory = {};
 let playerName = "Du";
+let playerId = null;
+let playerBalance = 0;
 let roundStartedAt = null;
 const leaderboardStorageKey = "schlag-den-nico-leaderboard";
+const playerAccountStorageKey = "schlag-den-nico-player-account";
 const supabaseUrl = "https://enomiaewxwqvzuhqfhff.supabase.co";
 const supabaseKey = "sb_publishable_Ehg3yiC5TuFe_BrClkC-Vw_O0FDEEUy";
 const onlineLeaderboardTable = "leaderboard";
+const onlinePlayersTable = "players";
 let selectedOnlineLeaderboard = "Einfach";
 
 const opponentChances = {
@@ -702,6 +706,7 @@ function loadFacts() {
     document.getElementById("scoreboard").style.display = "none";
     document.getElementById("name-box").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
+    updatePlayerAccountUI();
     updateLeaderboard();
     updateOnlineLeaderboard();
 
@@ -824,11 +829,11 @@ function startTimer() {
     }, 1000);
 }
 
-function calculateSpeedPoints(answerTime) {
+function calculateSpeedMoney(answerTime) {
     const perfectWindow = perfectPointWindows[selectedDifficulty];
 
     if (answerTime <= perfectWindow) {
-        return 100;
+        return 500;
     }
 
     if (answerTime >= 15) {
@@ -837,18 +842,14 @@ function calculateSpeedPoints(answerTime) {
 
     const slowestUsefulTime = 14;
     const progress = (answerTime - perfectWindow) / (slowestUsefulTime - perfectWindow);
-    return Math.max(5, Math.round(100 - progress * 95));
+    return Math.max(25, Math.round(500 - progress * 475));
 }
 
-function calculateWrongAnswerPenalty(answerTime) {
-    if (selectedDifficulty !== "genius") {
-        return 0;
-    }
-
+function calculateWrongAnswerPenaltyMoney(answerTime) {
     const safeTime = Math.min(Math.max(answerTime, 1), 15);
     const progress = (safeTime - 1) / 14;
 
-    return Math.round(70 - progress * 65);
+    return Math.round(250 - progress * 225);
 }
 
 function getOpponentAnswerTime() {
@@ -864,7 +865,7 @@ function getOpponentAnswerTime() {
 }
 
 function formatScoreLine() {
-    return `${playerName}: ${playerPoints} Punkte (${score} richtig) | Nico: ${opponentPoints} Punkte (${opponentScore} richtig)`;
+    return `${playerName}: ${formatMoney(playerMoney)} (${score} richtig) | Nico: ${formatMoney(opponentMoney)} (${opponentScore} richtig) | Konto: ${formatMoney(playerBalance)}`;
 }
 
 function makeOpponentGuess(currentQuestion) {
@@ -873,7 +874,7 @@ function makeOpponentGuess(currentQuestion) {
 
     if (isCorrect) {
         opponentScore += 1;
-        opponentPoints += calculateSpeedPoints(answerTime);
+        opponentMoney += calculateSpeedMoney(answerTime);
         return {
             guess: currentQuestion.correct,
             isCorrect: true,
@@ -905,8 +906,8 @@ function finishQuestion(answerIndex) {
     const opponentTurn = makeOpponentGuess(currentQuestion);
     const playerWasCorrect = answerIndex === currentQuestion.correct;
     const playerAnswerTime = answerIndex === null ? 15 : 15 - timeLeft;
-    const earnedPoints = playerWasCorrect ? calculateSpeedPoints(playerAnswerTime) : 0;
-    const lostPoints = !playerWasCorrect && answerIndex !== null ? calculateWrongAnswerPenalty(playerAnswerTime) : 0;
+    const earnedMoney = playerWasCorrect ? calculateSpeedMoney(playerAnswerTime) : 0;
+    const lostMoney = !playerWasCorrect && answerIndex !== null ? calculateWrongAnswerPenaltyMoney(playerAnswerTime) : 0;
 
     buttons.forEach((button) => {
         button.disabled = true;
@@ -915,10 +916,10 @@ function finishQuestion(answerIndex) {
     if (playerWasCorrect) {
         buttons[answerIndex].classList.add("correct");
         score += 1;
-        playerPoints += earnedPoints;
+        playerMoney += earnedMoney;
     } else if (answerIndex !== null) {
         buttons[answerIndex].classList.add("wrong");
-        playerPoints = Math.max(0, playerPoints - lostPoints);
+        playerMoney -= lostMoney;
     }
 
     buttons[currentQuestion.correct].classList.add("correct");
@@ -927,8 +928,8 @@ function finishQuestion(answerIndex) {
     updateScoreDots();
 
     const playerPointText = playerWasCorrect
-        ? ` | +${earnedPoints} Punkte`
-        : ` | -${lostPoints} Punkte`;
+        ? ` | +${formatMoney(earnedMoney)}`
+        : ` | -${formatMoney(lostMoney)}`;
     document.getElementById("opponent").innerText =
         `Nico tippt nach ${opponentTurn.answerTime}s: ${currentQuestion.answers[opponentTurn.guess]}${playerPointText}`;
     document.getElementById("score").innerText = formatScoreLine();
@@ -971,7 +972,7 @@ function showPointRules() {
     const buttons = document.querySelectorAll(".answer-btn");
 
     document.getElementById("question").innerText =
-        "Punkte-Regel: Pro Frage sind maximal 100 Punkte möglich. Je schneller du richtig antwortest, desto mehr Punkte bekommst du.";
+        "Geld-Regel: Pro richtige Antwort sind bis zu 500 € möglich. Bei einer falschen Antwort verlierst du bis zu 250 €. Dein Gewinn wird auf dein Online-Konto gebucht.";
     document.getElementById("next-btn").innerText = "Quiz starten";
     document.getElementById("next-btn").style.display = "inline-block";
     document.getElementById("home-btn").style.display = "none";
@@ -989,26 +990,32 @@ function showPointRules() {
     });
 }
 
-function startQuizShow() {
+async function startQuizShow() {
+    const accountReady = await ensurePlayerAccount();
+
+    if (!accountReady) {
+        return;
+    }
+
     quizStarted = true;
     clearInterval(factIntervalId);
-    updatePlayerName();
     document.getElementById("next-btn").innerText = "Nächste Frage";
     showCategories();
 }
 
-function finishRound() {
+async function finishRound() {
     const buttons = document.querySelectorAll(".answer-btn");
     const resultMessage = getResultMessage();
     stopTimer();
-    saveLeaderboardEntry();
+    const oldBalance = playerBalance;
+    await saveLeaderboardEntry();
 
     document.getElementById("question").innerText =
-        `${resultMessage} ${playerName}: ${playerPoints} Punkte (${score}/10) | Nico: ${opponentPoints} Punkte (${opponentScore}/10)`;
+        `${resultMessage} Rundengewinn: ${formatMoney(playerMoney)} (${score}/10) | Konto: ${formatMoney(oldBalance)} -> ${formatMoney(playerBalance)} | Nico: ${formatMoney(opponentMoney)} (${opponentScore}/10)`;
     document.body.classList.add("result-screen");
-    document.body.classList.toggle("winner-screen", playerPoints > opponentPoints);
-    document.body.classList.toggle("loser-screen", playerPoints < opponentPoints);
-    if (playerPoints > opponentPoints) {
+    document.body.classList.toggle("winner-screen", playerMoney > opponentMoney);
+    document.body.classList.toggle("loser-screen", playerMoney < opponentMoney);
+    if (playerMoney > opponentMoney) {
         startConfetti();
     }
     document.getElementById("next-btn").innerText = "Neue Runde";
@@ -1063,11 +1070,11 @@ function getConfettiColor(index) {
 }
 
 function getResultMessage() {
-    if (playerPoints > opponentPoints) {
+    if (playerMoney > opponentMoney) {
         return "Du hast gegen Nico gewonnen!";
     }
 
-    if (playerPoints < opponentPoints) {
+    if (playerMoney < opponentMoney) {
         return "Du hast gegen Nico verloren!";
     }
 
@@ -1080,6 +1087,164 @@ function updatePlayerName() {
     playerName = cleanedName || "Du";
 }
 
+function loadStoredPlayerAccount() {
+    const savedAccount = localStorage.getItem(playerAccountStorageKey);
+
+    if (!savedAccount) {
+        updatePlayerAccountUI();
+        return;
+    }
+
+    try {
+        const account = JSON.parse(savedAccount);
+        playerId = account.id || null;
+        playerName = account.gamertag || "Du";
+        playerBalance = Number(account.balance) || 0;
+        updatePlayerAccountUI();
+        refreshPlayerAccount();
+    } catch {
+        localStorage.removeItem(playerAccountStorageKey);
+        updatePlayerAccountUI();
+    }
+}
+
+function savePlayerAccount(account) {
+    playerId = account.id;
+    playerName = account.gamertag;
+    playerBalance = Number(account.balance) || 0;
+    localStorage.setItem(playerAccountStorageKey, JSON.stringify({
+        id: playerId,
+        gamertag: playerName,
+        balance: playerBalance
+    }));
+    updatePlayerAccountUI();
+}
+
+function updatePlayerAccountUI(message = "") {
+    const nameInput = document.getElementById("player-name");
+    const nameMessage = document.getElementById("name-message");
+    const accountBalance = document.getElementById("account-balance");
+
+    if (nameInput) {
+        nameInput.value = playerId ? playerName : nameInput.value;
+        nameInput.readOnly = Boolean(playerId);
+        nameInput.classList.toggle("locked", Boolean(playerId));
+    }
+
+    if (nameMessage) {
+        nameMessage.innerText = message || (playerId ? `Eingeloggt als ${playerName}` : "");
+        nameMessage.style.color = playerId && !message ? "#bbf7d0" : "#fca5a5";
+    }
+
+    if (accountBalance) {
+        accountBalance.innerText = `Konto: ${formatMoney(playerBalance)}`;
+    }
+}
+
+function normalizeGamertag(gamertag) {
+    return gamertag.trim().replace(/\s+/g, " ");
+}
+
+function getGamertagKey(gamertag) {
+    return normalizeGamertag(gamertag).toLowerCase();
+}
+
+async function ensurePlayerAccount() {
+    if (playerId) {
+        return true;
+    }
+
+    const nameInput = document.getElementById("player-name");
+    const gamertag = normalizeGamertag(nameInput.value);
+
+    if (gamertag.length < 2) {
+        updatePlayerAccountUI("Bitte gib zuerst einen Gamertag ein.");
+        return false;
+    }
+
+    try {
+        const gamertagKey = getGamertagKey(gamertag);
+        const existingPlayer = await fetchPlayerByGamertagKey(gamertagKey);
+
+        if (existingPlayer) {
+            updatePlayerAccountUI("Dieser Gamertag ist bereits vergeben.");
+            return false;
+        }
+
+        const createdPlayer = await createOnlinePlayer(gamertag, gamertagKey);
+        savePlayerAccount(createdPlayer);
+        return true;
+    } catch (error) {
+        updatePlayerAccountUI(error.message === "Gamertag vergeben."
+            ? "Dieser Gamertag ist bereits vergeben."
+            : "Online-Spieler-Tabelle ist noch nicht eingerichtet.");
+        return false;
+    }
+}
+
+async function fetchPlayerByGamertagKey(gamertagKey) {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${onlinePlayersTable}?select=id,gamertag,balance&gamertag_key=eq.${encodeURIComponent(gamertagKey)}&limit=1`, {
+        headers: getSupabaseHeaders()
+    });
+
+    if (!response.ok) {
+        throw new Error("Spieler konnten nicht geladen werden.");
+    }
+
+    const players = await response.json();
+    return players[0] || null;
+}
+
+async function createOnlinePlayer(gamertag, gamertagKey) {
+    const response = await fetch(`${supabaseUrl}/rest/v1/${onlinePlayersTable}`, {
+        method: "POST",
+        headers: getSupabaseHeaders({
+            "Content-Type": "application/json",
+            Prefer: "return=representation"
+        }),
+        body: JSON.stringify({
+            gamertag,
+            gamertag_key: gamertagKey,
+            balance: 0
+        })
+    });
+
+    if (response.status === 409) {
+        throw new Error("Gamertag vergeben.");
+    }
+
+    if (!response.ok) {
+        throw new Error("Spieler konnte nicht erstellt werden.");
+    }
+
+    const players = await response.json();
+    return players[0];
+}
+
+async function refreshPlayerAccount() {
+    if (!playerId) {
+        return;
+    }
+
+    try {
+        const response = await fetch(`${supabaseUrl}/rest/v1/${onlinePlayersTable}?select=id,gamertag,balance&id=eq.${encodeURIComponent(playerId)}&limit=1`, {
+            headers: getSupabaseHeaders()
+        });
+
+        if (!response.ok) {
+            return;
+        }
+
+        const players = await response.json();
+
+        if (players[0]) {
+            savePlayerAccount(players[0]);
+        }
+    } catch {
+        updatePlayerAccountUI();
+    }
+}
+
 function goHome() {
     stopTimer();
     quizStarted = false;
@@ -1089,8 +1254,8 @@ function goHome() {
     currentQuestionIndex = 0;
     score = 0;
     opponentScore = 0;
-    playerPoints = 0;
-    opponentPoints = 0;
+    playerMoney = 0;
+    opponentMoney = 0;
     questionAnswered = false;
 
     clearInterval(factIntervalId);
@@ -1112,24 +1277,50 @@ function getLeaderboard() {
     }
 }
 
-function saveLeaderboardEntry() {
+async function saveLeaderboardEntry() {
     const now = new Date();
     const usedSeconds = roundStartedAt ? Math.max(1, Math.round((Date.now() - roundStartedAt) / 1000)) : 0;
+    const newBalance = playerBalance + playerMoney;
     const entry = {
         name: playerName,
         category: selectedCategory ? selectedCategory.name : "-",
         date: now.toLocaleDateString("de-DE"),
         usedTime: formatUsedTime(usedSeconds),
         difficulty: difficultyLabels[selectedDifficulty],
-        points: playerPoints
+        points: newBalance,
+        money: newBalance,
+        roundMoney: playerMoney
     };
+    playerBalance = newBalance;
+    await updateOnlinePlayerBalance();
+
     const leaderboard = [...getLeaderboard(), entry]
-        .sort((first, second) => second.points - first.points)
+        .sort((first, second) => getEntryMoney(second) - getEntryMoney(first))
         .slice(0, 10);
 
+    savePlayerAccount({
+        id: playerId,
+        gamertag: playerName,
+        balance: playerBalance
+    });
     localStorage.setItem(leaderboardStorageKey, JSON.stringify(leaderboard));
     updateLeaderboard();
-    saveOnlineLeaderboardEntry(entry);
+    updateOnlineLeaderboard();
+}
+
+async function updateOnlinePlayerBalance() {
+    if (!playerId) {
+        return;
+    }
+
+    await fetch(`${supabaseUrl}/rest/v1/${onlinePlayersTable}?id=eq.${encodeURIComponent(playerId)}`, {
+        method: "PATCH",
+        headers: getSupabaseHeaders({
+            "Content-Type": "application/json",
+            Prefer: "return=minimal"
+        }),
+        body: JSON.stringify({ balance: playerBalance })
+    });
 }
 
 function updateLeaderboard() {
@@ -1187,25 +1378,25 @@ async function updateOnlineLeaderboard() {
     }
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online...", 6));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Lade online...", 3));
 
     try {
-        const difficultyFilter = `&difficulty=eq.${encodeURIComponent(selectedOnlineLeaderboard)}`;
-        let response = await fetchOnlineLeaderboard("name,category,date,usedTime,difficulty,points", difficultyFilter);
-
-        if (!response.ok) {
-            response = await fetchOnlineLeaderboard("name,date,usedTime,difficulty,points", difficultyFilter);
-        }
+        const response = await fetch(`${supabaseUrl}/rest/v1/${onlinePlayersTable}?select=gamertag,balance&order=balance.desc&limit=10`, {
+            headers: getSupabaseHeaders()
+        });
 
         if (!response.ok) {
             throw new Error("Online-Bestenliste nicht erreichbar.");
         }
 
-        const leaderboard = await response.json();
+        const leaderboard = (await response.json()).map((player) => ({
+            name: player.gamertag,
+            money: Number(player.balance) || 0
+        }));
         onlineLeaderboardBody.innerHTML = "";
 
         if (!leaderboard.length) {
-            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spiele", 6));
+            onlineLeaderboardBody.appendChild(createLeaderboardMessageRow("Noch keine Online-Spieler", 3));
             return;
         }
 
@@ -1215,12 +1406,6 @@ async function updateOnlineLeaderboard() {
     } catch {
         showOnlineLeaderboardMessage("Online-Tabelle noch nicht eingerichtet");
     }
-}
-
-function fetchOnlineLeaderboard(selectFields, difficultyFilter) {
-    return fetch(`${supabaseUrl}/rest/v1/${onlineLeaderboardTable}?select=${selectFields}${difficultyFilter}&order=points.desc&limit=10`, {
-        headers: getSupabaseHeaders()
-    });
 }
 
 function selectOnlineLeaderboard(filter) {
@@ -1245,7 +1430,7 @@ function showOnlineLeaderboardMessage(message) {
     const onlineLeaderboardBody = document.getElementById("online-leaderboard-body");
 
     onlineLeaderboardBody.innerHTML = "";
-    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message, 6));
+    onlineLeaderboardBody.appendChild(createLeaderboardMessageRow(message, 3));
 }
 
 function createLeaderboardRow(entry, index, showDifficulty) {
@@ -1261,13 +1446,19 @@ function createLeaderboardRow(entry, index, showDifficulty) {
     rankCell.innerText = index + 1;
     nameCell.innerText = entry.name;
     categoryCell.innerText = entry.category || "-";
-    dateCell.innerText = entry.date;
+    dateCell.innerText = entry.date || "-";
     usedTimeCell.innerText = entry.usedTime || entry.time || "-";
-    pointsCell.innerText = entry.points;
+    pointsCell.innerText = formatMoney(getEntryMoney(entry));
     difficultyCell.innerText = entry.difficulty || "-";
 
     row.appendChild(rankCell);
     row.appendChild(nameCell);
+
+    if (!showDifficulty) {
+        row.appendChild(pointsCell);
+        return row;
+    }
+
     row.appendChild(categoryCell);
     row.appendChild(dateCell);
     row.appendChild(usedTimeCell);
@@ -1277,6 +1468,14 @@ function createLeaderboardRow(entry, index, showDifficulty) {
     }
 
     return row;
+}
+
+function getEntryMoney(entry) {
+    return Number(entry.money ?? entry.points ?? entry.balance) || 0;
+}
+
+function formatMoney(amount) {
+    return `${Math.round(amount).toLocaleString("de-DE")} €`;
 }
 
 function formatUsedTime(totalSeconds) {
@@ -1334,8 +1533,8 @@ function selectAnswer(answerIndex) {
         currentQuestionIndex = 0;
         score = 0;
         opponentScore = 0;
-        playerPoints = 0;
-        opponentPoints = 0;
+        playerMoney = 0;
+        opponentMoney = 0;
         resetScoreDots();
         showPointRules();
         return;
@@ -1351,5 +1550,6 @@ function selectAnswer(answerIndex) {
 }
 
 loadFacts();
+loadStoredPlayerAccount();
 document.querySelector(".answer-btn").addEventListener("click", showNextFact);
 factIntervalId = setInterval(loadFacts, 8000);

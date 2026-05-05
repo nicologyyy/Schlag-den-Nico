@@ -12,12 +12,14 @@
     <h1 class="show-title">Schlag den Nico</h1>
     <div id="name-box">
         <input id="player-name" type="text" maxlength="18" placeholder="Gamertag">
+        <div id="name-message"></div>
+        <div id="account-balance">Konto: 0 €</div>
     </div>
     <div id="leaderboard">
         <h2>Bestenliste</h2>
         <div class="leaderboard-grid">
             <section>
-                <h3>Lokal</h3>
+                <h3>Höchstverdiener lokal</h3>
                 <table>
                     <thead>
                         <tr>
@@ -26,7 +28,7 @@
                             <th>Kategorie</th>
                             <th>Datum</th>
                             <th>Zeit</th>
-                            <th>Punkte</th>
+                            <th>Geld</th>
                             <th>Level</th>
                         </tr>
                     </thead>
@@ -34,22 +36,13 @@
                 </table>
             </section>
             <section>
-                <h3>Online</h3>
-                <div id="online-filter">
-                    <button class="leaderboard-filter-btn active" type="button" data-filter="Einfach" onclick="selectOnlineLeaderboard('Einfach')">Einfach</button>
-                    <button class="leaderboard-filter-btn" type="button" data-filter="Mittel" onclick="selectOnlineLeaderboard('Mittel')">Mittel</button>
-                    <button class="leaderboard-filter-btn" type="button" data-filter="Schwer" onclick="selectOnlineLeaderboard('Schwer')">Schwer</button>
-                    <button class="leaderboard-filter-btn" type="button" data-filter="Genie" onclick="selectOnlineLeaderboard('Genie')">Genie</button>
-                </div>
+                <h3>Höchstverdiener online</h3>
                 <table>
                     <thead>
                         <tr>
                             <th>#</th>
                             <th>Gamertag</th>
-                            <th>Kategorie</th>
-                            <th>Datum</th>
-                            <th>Zeit</th>
-                            <th>Punkte</th>
+                            <th>Konto</th>
                         </tr>
                     </thead>
                     <tbody id="online-leaderboard-body"></tbody>

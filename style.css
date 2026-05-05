@@ -135,6 +135,21 @@ body:not(.quiz-active) .answer-btn:first-child {
     margin: -16px auto 22px;
 }
 
+#name-message {
+    min-height: 20px;
+    margin-top: 7px;
+    color: #fca5a5;
+    font-size: 13px;
+    font-weight: 800;
+}
+
+#account-balance {
+    margin-top: 6px;
+    color: #bbf7d0;
+    font-size: 15px;
+    font-weight: 900;
+}
+
 #player-name {
     width: min(260px, 80vw);
     padding: 10px 14px;
@@ -146,6 +161,10 @@ body:not(.quiz-active) .answer-btn:first-child {
     font-weight: 700;
     text-align: center;
     outline: none;
+}
+
+#player-name.locked {
+    border-color: #22c55e;
 }
 
 #player-name::placeholder {
