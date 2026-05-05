@@ -277,23 +277,51 @@ function addGeneralQuestions() {
 function addSportQuestions() {
     const groups = questionData["Sport"];
 
-    fillToTarget(groups.easy, (index) => {
-        const goalsA = 1 + (index % 5);
-        const goalsB = 1 + ((index + 2) % 5);
-        return [`Ein Team schießt ${goalsA} Tore und danach noch ${goalsB}. Wie viele Tore sind das?`, String(goalsA + goalsB), [String(goalsA + goalsB + 1), String(goalsA), String(goalsB)]];
-    });
+    const easyFacts = [
+        ["Welche Sportart spielte Michael Jordan berühmt?", "Basketball", ["Tennis", "Handball", "Golf"]],
+        ["In welcher Sportart ist Lionel Messi bekannt?", "Fußball", ["Baseball", "Rugby", "Eishockey"]],
+        ["Welche Sportart wird bei Wimbledon gespielt?", "Tennis", ["Golf", "Cricket", "Badminton"]],
+        ["Wie heißt der Torwart im Fußball auch?", "Keeper", ["Center", "Pitcher", "Sprinter"]],
+        ["Welche Sportart nutzt einen Puck?", "Eishockey", ["Basketball", "Volleyball", "Handball"]],
+        ["Welcher Sport wird oft im Schwimmbecken ausgeübt?", "Schwimmen", ["Radsport", "Boxen", "Skispringen"]],
+        ["Welche Sportart nutzt ein Netz in der Mitte des Feldes?", "Volleyball", ["Boxen", "Golf", "Rudern"]],
+        ["Bei welcher Sportart fährt man die Tour de France?", "Radsport", ["Ski Alpin", "Fechten", "Judo"]],
+        ["Welche Sportart machte Dirk Nowitzki weltberühmt?", "Basketball", ["Fußball", "Tennis", "Handball"]],
+        ["Welche Farbe hat der Ball im klassischen Tennis oft?", "Gelb", ["Schwarz", "Braun", "Lila"]],
+        ["Welche Sportart hat einen Elfmeter?", "Fußball", ["Golf", "Boxen", "Curling"]],
+        ["Welche Sportart findet in einem Ring statt?", "Boxen", ["Tennis", "Segeln", "Radsport"]]
+    ];
+    fillToTarget(groups.easy, (index) => easyFacts[index % easyFacts.length]);
 
-    fillToTarget(groups.medium, (index) => {
-        const wins = 2 + (index % 6);
-        return [`Ein Team bekommt pro Sieg 3 Punkte. Wie viele Punkte sind ${wins} Siege?`, String(wins * 3), [String(wins * 2), String(wins * 3 + 1), String(wins + 3)]];
-    });
+    const mediumFacts = [
+        ["Wer gewann mit Argentinien die Fußball-WM 2022 als Kapitän?", "Lionel Messi", ["Cristiano Ronaldo", "Neymar", "Kylian Mbappé"]],
+        ["Welche Stadt ist traditionell mit dem Tennisturnier auf Rasen verbunden?", "Wimbledon", ["Monaco", "Boston", "Dortmund"]],
+        ["Wie nennt man im Fußball einen Treffer aus der eigenen Hälfte selten?", "Traumtor", ["Ippon", "Birdie", "Ace"]],
+        ["Welche Nation gewann die Fußball-WM 2014?", "Deutschland", ["Brasilien", "Spanien", "Frankreich"]],
+        ["Welcher Schwimmer gewann viele olympische Goldmedaillen für die USA?", "Michael Phelps", ["Usain Bolt", "Roger Federer", "Tom Brady"]],
+        ["Welche Sportart nutzt den Begriff Birdie?", "Golf", ["Judo", "Boxen", "Volleyball"]],
+        ["In welcher Sportart gibt es die Position Quarterback?", "American Football", ["Basketball", "Eishockey", "Handball"]],
+        ["Wie heißt ein direkter Aufschlagpunkt im Tennis?", "Ass", ["Scrum", "Touchdown", "Dunk"]],
+        ["Welche deutsche Tennisspielerin gewann 1988 den Golden Slam?", "Steffi Graf", ["Angelique Kerber", "Sabine Lisicki", "Andrea Petkovic"]],
+        ["Welche Sportart nutzt den Begriff Ippon?", "Judo", ["Cricket", "Golf", "Baseball"]],
+        ["Bei welchem Wettbewerb trägt der Führende oft das Gelbe Trikot?", "Tour de France", ["Wimbledon", "Super Bowl", "Davis Cup"]],
+        ["Welche Sportart ist mit dem Super Bowl verbunden?", "American Football", ["Eishockey", "Baseball", "Rugby"]]
+    ];
+    fillToTarget(groups.medium, (index) => mediumFacts[index % mediumFacts.length]);
 
     const hardFacts = [
         ["Welche Tennisoberfläche wird bei Wimbledon gespielt?", "Rasen", ["Sand", "Hartplatz", "Teppich"]],
         ["Wie viele Spieler stehen beim Handball pro Team auf dem Feld?", "7", ["5", "6", "8"]],
         ["Welche Sportart nutzt den Begriff Scrum?", "Rugby", ["Cricket", "Hockey", "Lacrosse"]],
         ["Wie heißt der Weltverband der Leichtathletik?", "World Athletics", ["FIFA", "UCI", "FINA"]],
-        ["Welche Stadt war Gastgeber der Olympischen Sommerspiele 1992?", "Barcelona", ["Seoul", "Atlanta", "Los Angeles"]]
+        ["Welche Stadt war Gastgeber der Olympischen Sommerspiele 1992?", "Barcelona", ["Seoul", "Atlanta", "Los Angeles"]],
+        ["Wer stellte 2009 den 100-Meter-Weltrekord der Männer auf?", "Usain Bolt", ["Carl Lewis", "Asafa Powell", "Yohan Blake"]],
+        ["Welche Nation gewann die Rugby-WM 2019?", "Südafrika", ["England", "Neuseeland", "Frankreich"]],
+        ["Welche Schachfigur bewegt sich diagonal?", "Läufer", ["Turm", "Springer", "Bauer"]],
+        ["Welcher Verein gewann 2013 das Champions-League-Finale gegen Dortmund?", "FC Bayern München", ["Real Madrid", "FC Barcelona", "Chelsea"]],
+        ["Was bedeutet VAR im Fußball?", "Video Assistant Referee", ["Very Active Runner", "Virtual Attack Rule", "Verified Arena Result"]],
+        ["Wie heißt der Pokal für den NHL-Meister?", "Stanley Cup", ["Vince Lombardi Trophy", "Davis Cup", "Ryder Cup"]],
+        ["Welche Disziplin kombiniert Skispringen und Langlauf?", "Nordische Kombination", ["Biathlon", "Ski Alpin", "Skeleton"]]
     ];
     fillToTarget(groups.hard, (index) => hardFacts[index % hardFacts.length]);
 
@@ -302,7 +330,14 @@ function addSportQuestions() {
         ["Wie heißt ein perfektes Spiel im Bowling?", "300", ["180", "240", "360"]],
         ["Welcher Radklassiker endet traditionell im Velodrom von Roubaix?", "Paris-Roubaix", ["Mailand-Sanremo", "Lüttich-Bastogne-Lüttich", "Flandern-Rundfahrt"]],
         ["Welche Nation gewann die Rugby-WM 1995?", "Südafrika", ["Neuseeland", "Australien", "England"]],
-        ["Wie heißt die olympische Bootsklasse mit einer Person und zwei Rudern?", "Einer", ["Zweier", "Vierer", "Achter"]]
+        ["Wie heißt die olympische Bootsklasse mit einer Person und zwei Rudern?", "Einer", ["Zweier", "Vierer", "Achter"]],
+        ["Welcher Boxer wurde als 'The Greatest' bekannt?", "Muhammad Ali", ["Mike Tyson", "Joe Frazier", "George Foreman"]],
+        ["Welche Schacheröffnung beginnt typischerweise mit 1. d4 d5 2. c4?", "Damengambit", ["Königsgambit", "Caro-Kann", "Skandinavische Verteidigung"]],
+        ["Welcher Fahrer gewann sieben Formel-1-WM-Titel gemeinsam mit Hamilton als Rekordmarke?", "Michael Schumacher", ["Sebastian Vettel", "Ayrton Senna", "Niki Lauda"]],
+        ["Welche Stadt richtete 1964 und 2021 Olympische Sommerspiele aus?", "Tokio", ["Seoul", "Peking", "Sydney"]],
+        ["Welcher Begriff bezeichnet im Cricket drei Wickets mit drei aufeinanderfolgenden Würfen?", "Hattrick", ["Century", "Maiden", "Boundary"]],
+        ["Wer gewann 1972 das Schach-WM-Duell gegen Boris Spasski?", "Bobby Fischer", ["Anatoli Karpow", "Garry Kasparov", "Magnus Carlsen"]],
+        ["Welche Trophäe bekommt der Sieger des Ryder Cups?", "Ryder Cup", ["Claret Jug", "Stanley Cup", "Davis Cup"]]
     ];
     fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
 }
