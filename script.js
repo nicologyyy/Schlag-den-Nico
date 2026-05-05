@@ -909,12 +909,14 @@ let playerName = "Du";
 let playerId = null;
 let playerBalance = 0;
 let roundStartedAt = null;
+let lastRoundFeedbackContext = null;
 const leaderboardStorageKey = "schlag-den-nico-leaderboard";
 const playerAccountStorageKey = "schlag-den-nico-player-account";
 const supabaseUrl = "https://enomiaewxwqvzuhqfhff.supabase.co";
 const supabaseKey = "sb_publishable_Ehg3yiC5TuFe_BrClkC-Vw_O0FDEEUy";
 const onlineLeaderboardTable = "leaderboard";
 const onlinePlayersTable = "players";
+const onlineFeedbackTable = "feedback";
 let selectedOnlineLeaderboard = "Einfach";
 
 const opponentChances = {
@@ -959,6 +961,7 @@ function loadFacts() {
     document.getElementById("scoreboard").style.display = "none";
     document.getElementById("name-box").style.display = "block";
     document.getElementById("leaderboard").style.display = "block";
+    hideFeedbackForm();
     updatePlayerAccountUI();
     updateLeaderboard();
     updateOnlineLeaderboard();
@@ -1048,6 +1051,7 @@ function showCategories() {
     document.getElementById("scoreboard").style.display = "none";
     document.getElementById("name-box").style.display = "none";
     document.getElementById("leaderboard").style.display = "none";
+    hideFeedbackForm();
     document.getElementById("score").innerText = "";
 
     buttons.forEach((button, index) => {
@@ -1204,6 +1208,7 @@ function showQuestion() {
     }
 
     document.getElementById("question").innerText = `Frage ${currentQuestionIndex + 1}/10: ${currentQuestion.question}`;
+    hideFeedbackForm();
     document.getElementById("next-btn").style.display = "inline-block";
     document.getElementById("next-btn").innerText = currentQuestionIndex === 9 ? "Ergebnis" : "Nächste Frage";
     document.getElementById("difficulty-box").style.display = "none";
@@ -1235,6 +1240,7 @@ function showPointRules() {
     document.getElementById("game-info").style.display = "none";
     document.getElementById("scoreboard").style.display = "none";
     document.getElementById("score").innerText = "";
+    hideFeedbackForm();
     roundStartedAt = null;
     questionAnswered = true;
     currentQuestionIndex = -1;
@@ -1264,6 +1270,16 @@ async function finishRound() {
     stopTimer();
     const oldBalance = playerBalance;
     await saveLeaderboardEntry();
+    lastRoundFeedbackContext = {
+        player_id: playerId,
+        gamertag: playerName,
+        category: selectedCategory ? selectedCategory.name : "-",
+        difficulty: difficultyLabels[selectedDifficulty],
+        score,
+        round_money: playerMoney,
+        opponent_money: opponentMoney,
+        balance_after_round: playerBalance
+    };
 
     document.getElementById("question").innerText =
         `${resultMessage} Rundengewinn: ${formatMoney(playerMoney)} (${score}/10) | Konto: ${formatMoney(oldBalance)} -> ${formatMoney(playerBalance)} | Nico: ${formatMoney(opponentMoney)} (${opponentScore}/10)`;
@@ -1280,6 +1296,7 @@ async function finishRound() {
     document.getElementById("game-info").style.display = "none";
     document.getElementById("scoreboard").style.display = "block";
     document.getElementById("score").innerText = "";
+    showFeedbackForm();
     selectedCategory = null;
     roundQuestions = [];
     currentQuestionIndex = 0;
@@ -1291,6 +1308,74 @@ async function finishRound() {
         button.classList.remove("correct", "wrong");
         button.disabled = false;
     });
+}
+
+function showFeedbackForm() {
+    const feedbackBox = document.getElementById("feedback-box");
+    const feedbackMessage = document.getElementById("feedback-message");
+    const feedbackStatus = document.getElementById("feedback-status");
+    const feedbackSubmit = document.getElementById("feedback-submit");
+
+    feedbackBox.style.display = "block";
+    feedbackMessage.value = "";
+    feedbackStatus.innerText = "";
+    feedbackSubmit.disabled = false;
+    feedbackSubmit.innerText = "Absenden";
+}
+
+function hideFeedbackForm() {
+    const feedbackBox = document.getElementById("feedback-box");
+
+    if (feedbackBox) {
+        feedbackBox.style.display = "none";
+    }
+}
+
+async function submitFeedback() {
+    const feedbackType = document.getElementById("feedback-type").value;
+    const feedbackMessage = document.getElementById("feedback-message");
+    const feedbackStatus = document.getElementById("feedback-status");
+    const feedbackSubmit = document.getElementById("feedback-submit");
+    const message = feedbackMessage.value.trim();
+
+    if (message.length < 4) {
+        feedbackStatus.innerText = "Bitte kurz beschreiben, was los ist.";
+        return;
+    }
+
+    feedbackSubmit.disabled = true;
+    feedbackSubmit.innerText = "Sende...";
+    feedbackStatus.innerText = "";
+
+    try {
+        const context = lastRoundFeedbackContext || {};
+        const response = await fetch(`${supabaseUrl}/rest/v1/${onlineFeedbackTable}`, {
+            method: "POST",
+            headers: getSupabaseHeaders({
+                "Content-Type": "application/json",
+                Prefer: "return=minimal"
+            }),
+            body: JSON.stringify({
+                ...context,
+                type: feedbackType,
+                message,
+                page_url: window.location.href,
+                user_agent: navigator.userAgent
+            })
+        });
+
+        if (!response.ok) {
+            throw new Error("Feedback konnte nicht gespeichert werden.");
+        }
+
+        feedbackMessage.value = "";
+        feedbackStatus.innerText = "Danke, ist angekommen!";
+        feedbackSubmit.innerText = "Gesendet";
+    } catch {
+        feedbackSubmit.disabled = false;
+        feedbackSubmit.innerText = "Absenden";
+        feedbackStatus.innerText = "Feedback-Tabelle noch nicht eingerichtet.";
+    }
 }
 
 function startConfetti() {

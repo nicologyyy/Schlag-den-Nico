@@ -75,6 +75,17 @@
 
     <button id="next-btn" onclick="nextQuestion()">Weiter</button>
     <button id="home-btn" type="button" onclick="goHome()">Zum Anfang</button>
+    <div id="feedback-box">
+        <h3>Feedback oder Bug melden</h3>
+        <select id="feedback-type">
+            <option value="Feedback">Feedback</option>
+            <option value="Bug">Bug</option>
+            <option value="Frage falsch">Frage falsch</option>
+        </select>
+        <textarea id="feedback-message" maxlength="600" placeholder="Was ist dir aufgefallen?"></textarea>
+        <button id="feedback-submit" type="button" onclick="submitFeedback()">Absenden</button>
+        <div id="feedback-status"></div>
+    </div>
     <div id="score"></div>
 </div>
 

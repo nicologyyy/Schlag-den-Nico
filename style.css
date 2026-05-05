@@ -481,6 +481,73 @@ body.result-screen #home-btn {
     margin-top: 8px;
 }
 
+#feedback-box {
+    display: none;
+    width: min(560px, 94vw);
+    margin: 18px auto 0;
+    padding: 14px;
+    background: rgba(17, 24, 39, 0.88);
+    border: 1px solid rgba(250, 204, 21, 0.55);
+    border-radius: 8px;
+}
+
+#feedback-box h3 {
+    margin: 0 0 10px;
+    color: #fef3c7;
+    font-size: 18px;
+}
+
+#feedback-type,
+#feedback-message {
+    width: 100%;
+    border: 2px solid #334155;
+    border-radius: 8px;
+    background: #0f172a;
+    color: white;
+    font: inherit;
+    font-weight: 700;
+    outline: none;
+}
+
+#feedback-type {
+    padding: 10px 12px;
+    margin-bottom: 10px;
+}
+
+#feedback-message {
+    min-height: 108px;
+    padding: 12px;
+    resize: vertical;
+}
+
+#feedback-message::placeholder {
+    color: #94a3b8;
+}
+
+#feedback-submit {
+    margin-top: 10px;
+    padding: 10px 18px;
+    border: none;
+    border-radius: 8px;
+    background: #38bdf8;
+    color: #082f49;
+    cursor: pointer;
+    font-weight: 900;
+}
+
+#feedback-submit:disabled {
+    cursor: not-allowed;
+    opacity: 0.72;
+}
+
+#feedback-status {
+    min-height: 18px;
+    margin-top: 8px;
+    color: #bbf7d0;
+    font-size: 13px;
+    font-weight: 800;
+}
+
 @media (max-width: 760px) {
     body.quiz-active #answers {
         grid-template-columns: 1fr;
@@ -561,6 +628,11 @@ body.result-screen #home-btn {
     #scoreboard {
         width: 100%;
         padding: 8px;
+    }
+
+    #feedback-box {
+        width: 100%;
+        margin-top: 14px;
     }
 
     body:not(.quiz-active) .answer-btn:first-child {
