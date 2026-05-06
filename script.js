@@ -27,22 +27,216 @@ const facts = [
 function buildQuestionItemsFromPairs(pairs) {
     const answerPool = [...new Set(pairs.map((pair) => pair[1]))];
 
-    return pairs.map(([question, answer], index) => {
-        const wrongAnswers = [];
-        let offset = 1;
+    return pairs.map(([question, answer]) => [
+        question,
+        answer,
+        createWrongAnswers(question, answer, answerPool)
+    ]);
+}
 
-        while (wrongAnswers.length < 3) {
-            const candidate = answerPool[(index + offset) % answerPool.length];
+function createWrongAnswers(question, answer, fallbackAnswers) {
+    const wrongAnswers = [];
+    const pools = [
+        getDistractorPool(question, answer),
+        fallbackAnswers,
+        distractorPools.general
+    ];
 
-            if (candidate !== answer && !wrongAnswers.includes(candidate)) {
-                wrongAnswers.push(candidate);
-            }
-
-            offset += 1;
+    pools.flat().forEach((candidate) => {
+        if (
+            wrongAnswers.length < 3
+            && candidate !== answer
+            && !wrongAnswers.includes(candidate)
+        ) {
+            wrongAnswers.push(candidate);
         }
-
-        return [question, answer, wrongAnswers];
     });
+
+    return wrongAnswers;
+}
+
+function getDistractorPool(question, answer) {
+    const lowerQuestion = question.toLowerCase();
+    const lowerAnswer = answer.toLowerCase();
+
+    if (/^\d/.test(answer)) {
+        return distractorPools.numbers;
+    }
+
+    if (lowerQuestion.includes("hauptstadt") || lowerQuestion.includes("stadt ist")) {
+        return distractorPools.capitals;
+    }
+
+    if (lowerQuestion.includes("chemische formel")) {
+        return distractorPools.formulas;
+    }
+
+    if (
+        lowerQuestion.includes("element")
+        || lowerQuestion.includes("ordnungszahl")
+        || lowerQuestion.includes("metall")
+        || lowerQuestion.includes("flammenfärbung")
+    ) {
+        return distractorPools.chemistry;
+    }
+
+    if (lowerQuestion.includes("einheit") || lowerQuestion.includes("misst")) {
+        return distractorPools.units;
+    }
+
+    if (lowerQuestion.includes("währung")) {
+        return distractorPools.currencies;
+    }
+
+    if (lowerQuestion.includes("planet") || lowerQuestion.includes("sonnensystem")) {
+        return distractorPools.planets;
+    }
+
+    if (lowerQuestion.includes("sprache")) {
+        return distractorPools.languages;
+    }
+
+    if (lowerQuestion.includes("farbe") || lowerQuestion.includes("smaragd") || lowerQuestion.includes("saphir")) {
+        return distractorPools.colors;
+    }
+
+    if (
+        lowerQuestion.includes("tier")
+        || lowerQuestion.includes("vogel")
+        || lowerQuestion.includes("säugetier")
+        || lowerQuestion.includes("reptil")
+        || lowerQuestion.includes("fisch")
+    ) {
+        return distractorPools.animals;
+    }
+
+    if (lowerQuestion.includes("organ") || lowerQuestion.includes("knochen") || lowerQuestion.includes("blut")) {
+        return distractorPools.body;
+    }
+
+    if (lowerQuestion.includes("halbinsel")) {
+        return distractorPools.peninsulas;
+    }
+
+    if (
+        lowerQuestion.includes("kontinent")
+        || lowerQuestion.includes("ozean")
+        || lowerQuestion.includes("meer")
+        || lowerQuestion.includes("fluss")
+        || lowerQuestion.includes("wüste")
+        || lowerQuestion.includes("insel")
+        || lowerQuestion.includes("halbinsel")
+        || lowerQuestion.includes("gebirge")
+        || lowerQuestion.includes("berg")
+        || lowerQuestion.includes("wasserfall")
+        || lowerQuestion.includes("regenwald")
+    ) {
+        return distractorPools.geography;
+    }
+
+    if (lowerQuestion.includes("angst")) {
+        return distractorPools.phobias;
+    }
+
+    if (lowerQuestion.includes("wissenschaft") || lowerQuestion.includes("lehre")) {
+        return distractorPools.sciences;
+    }
+
+    if (
+        lowerQuestion.includes("wer ")
+        || lowerQuestion.includes("schrieb")
+        || lowerQuestion.includes("malte")
+        || lowerQuestion.includes("komponierte")
+        || lowerQuestion.includes("entwickelte")
+        || lowerQuestion.includes("erfand")
+        || lowerQuestion.includes("entdeckte")
+        || lowerAnswer.includes("nietzsche")
+    ) {
+        return distractorPools.people;
+    }
+
+    return distractorPools.general;
+}
+
+const distractorPools = {
+    capitals: [
+        "Paris", "Rom", "Madrid", "Wien", "Bern", "London", "Prag", "Oslo",
+        "Helsinki", "Dublin", "Lissabon", "Athen", "Kairo", "Bangkok", "Hanoi",
+        "Lima", "Quito", "Nairobi", "Riga", "Tallinn", "Vilnius", "Baku"
+    ],
+    geography: [
+        "Sahara", "Gobi", "Mojave-Wüste", "Nil", "Amazonas", "Wolga", "Atlantik",
+        "Pazifik", "Arktischer Ozean", "Mittelmeer", "Kaspisches Meer", "Alpen",
+        "Anden", "Kilimandscharo", "Great Barrier Reef", "Grönland", "Sizilien"
+    ],
+    peninsulas: [
+        "Iberische Halbinsel", "Skandinavische Halbinsel", "Balkanhalbinsel",
+        "Arabische Halbinsel", "Apenninhalbinsel", "Koreanische Halbinsel"
+    ],
+    chemistry: [
+        "Eisen", "Gold", "Silber", "Uran", "Wasserstoff", "Quecksilber", "Kupfer",
+        "Schwefel", "Sauerstoff", "Kobalt", "Natrium", "Kalium", "Calcium"
+    ],
+    formulas: [
+        "H₂O", "CO₂", "NaCl", "O₃", "NH₃", "CH₄", "H₂SO₄", "H₂O₂",
+        "C₂H₅OH", "NaOH", "CaCO₃", "SO₂", "N₂O"
+    ],
+    units: [
+        "Volt", "Watt", "Ampere", "Ohm", "Hertz", "Joule", "Pascal", "Tesla",
+        "Becquerel", "Sievert", "Kelvin", "Farad", "Coulomb", "Dezibel"
+    ],
+    currencies: [
+        "Euro", "Yen", "Schweizer Franken", "Peseta", "Dollar", "Pfund",
+        "Krone", "Real"
+    ],
+    planets: [
+        "Merkur", "Venus", "Erde", "Mars", "Jupiter", "Saturn", "Uranus", "Neptun"
+    ],
+    languages: [
+        "Deutsch", "Spanisch", "Französisch", "Arabisch", "Portugiesisch",
+        "Finnisch", "Ungarisch", "Persisch/Farsi", "Türkisch", "Thai",
+        "Vietnamesisch", "Hebräisch", "Bengalisch", "Indonesisch", "Malaiisch"
+    ],
+    colors: [
+        "Rot", "Blau", "Grün", "Gelb", "Orange", "Violett", "Braun", "Schwarz",
+        "Weiß", "Rosa", "Rotbraun", "Karminrot", "Rot-Violett"
+    ],
+    animals: [
+        "Löwe", "Elefant", "Giraffe", "Känguru", "Eisbär", "Blauwal", "Orca",
+        "Salzwasserkrokodil", "Kolibri", "Eule", "Pinguin", "Regenwurm",
+        "Oktopus", "Schnecke", "Gepard"
+    ],
+    body: [
+        "Gehirn", "Herz", "Leber", "Niere", "Bauchspeicheldrüse", "Haut",
+        "Knochenmark", "Oberschenkelknochen", "Steigbügel", "Lunge", "Magen"
+    ],
+    phobias: [
+        "Klaustrophobie", "Akrophobie", "Agoraphobie", "Nyktophobie",
+        "Arachnophobie", "Aquaphobie"
+    ],
+    sciences: [
+        "Astronomie", "Geologie", "Paläontologie", "Kartografie", "Zoologie",
+        "Botanik", "Mykologie", "Seismologie", "Meteorologie", "Toxikologie",
+        "Genetik", "Anatomie", "Ozeanografie", "Klimatologie", "Mineralogie",
+        "Mikrobiologie", "Neurologie", "Philosophie"
+    ],
+    people: [
+        "Johann Wolfgang von Goethe", "Friedrich Nietzsche", "Leonardo da Vinci",
+        "Vincent van Gogh", "Pablo Picasso", "William Shakespeare",
+        "Ludwig van Beethoven", "Wolfgang Amadeus Mozart", "Charles Darwin",
+        "Albert Einstein", "Isaac Newton", "Nikolaus Kopernikus",
+        "Alexander Fleming", "Franz Kafka", "George Orwell", "Homer"
+    ],
+    numbers: [
+        "1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12", "16", "24",
+        "32", "46", "50", "60", "206", "300", "1000", "3600", "86.400",
+        "100.000"
+    ],
+    general: [
+        "Berlin", "Paris", "Wasser", "Sauerstoff", "Sonne", "Erde", "Europa",
+        "Asien", "Afrika", "Australien", "Grün", "Blau", "Jupiter", "Saturn"
+    ]
+};
 }
 
 const generalEasyQuestionPairs = [
