@@ -704,6 +704,114 @@ const sportHardQuestionPairs = [
     ["Wie nennt man im Tennis einen unerreichbaren Stoppball?", "Winner Drop Shot"]
 ];
 
+const sportGeniusExtraQuestionPairs = [
+    ["Wer war der einzige Torwart, der den Ballon d’Or gewann?", "Lew Jaschin"],
+    ["In welchem Jahr fand die erste moderne Olympiade statt?", "1896"],
+    ["Welcher Formel-1-Fahrer gewann 2009 überraschend den WM-Titel mit Brawn GP?", "Jenson Button"],
+    ["Welche Nation gewann die erste Fußball-WM 1930?", "Uruguay"],
+    ["Wer hält den Rekord für die meisten NBA-Meisterschaften als Spieler?", "Bill Russell"],
+    ["Welche Sportart nutzt den Begriff „Ippon“?", "Judo"],
+    ["Welcher Tennisspieler gewann 1988 den Golden Slam?", "Steffi Graf"],
+    ["Wie heißt das älteste noch ausgetragene Tennisturnier der Welt?", "Wimbledon"],
+    ["Welche Nation gewann die Rugby-WM 1995 im eigenen Land?", "Südafrika"],
+    ["Wer erzielte das Wembley-Tor 1966?", "Geoff Hurst"],
+    ["Welche Stadt war Gastgeber der Olympischen Sommerspiele 1964?", "Tokio"],
+    ["Welcher Boxer wurde „The Greatest“ genannt?", "Muhammad Ali"],
+    ["In welcher Sportart gibt es den Begriff „En passant“?", "Schach"],
+    ["Wer gewann die Formel-1-WM 1998 und 1999?", "Mika Häkkinen"],
+    ["Welche Nation gewann die meisten Fußball-WM-Titel?", "Brasilien"],
+    ["Wer ist Rekordtorschütze der deutschen Nationalmannschaft?", "Miroslav Klose"],
+    ["Welche Sportart nutzt den Begriff „Bogey“?", "Golf"],
+    ["Welcher Verein gewann die erste Champions League 1992/93?", "Olympique Marseille"],
+    ["Wie heißt der Rekordmeister der NBA?", "Boston Celtics und Los Angeles Lakers"],
+    ["Welche Nation gewann die Handball-WM 2019?", "Dänemark"],
+    ["Wer hält den Rekord für die meisten Tore in einer Bundesliga-Saison?", "Robert Lewandowski"],
+    ["Welche Sportart nutzt den Begriff „Slam Dunk“?", "Basketball"],
+    ["Welche Nation gewann die erste Rugby-WM 1987?", "Neuseeland"],
+    ["Wer gewann die Tour de France siebenmal, wurde aber später disqualifiziert?", "Lance Armstrong"],
+    ["Welche Sportart nutzt den Begriff „Hat Trick“ besonders häufig?", "Fußball/Eishockey"],
+    ["Wer gewann die meisten French-Open-Titel im Herreneinzel?", "Rafael Nadal"],
+    ["Welche Nation gewann die Fußball-WM 1998?", "Frankreich"],
+    ["Wie heißt die höchste Spielklasse im deutschen Eishockey?", "DEL"],
+    ["Welche Sportart machte Jan-Ove Waldner berühmt?", "Tischtennis"],
+    ["Wer gewann die Formel-1-WM 2016?", "Nico Rosberg"],
+    ["Welche Nation gewann die erste Basketball-WM der Männer?", "Argentinien"],
+    ["Welche Sportart nutzt den Begriff „Kata“?", "Karate/Judo"],
+    ["Wer hält den Weltrekord über 100 Meter der Männer?", "Usain Bolt"],
+    ["Wie viele Grand-Slam-Turniere gibt es im Tennis pro Jahr?", "4"],
+    ["Welche Nation gewann die Fußball-EM 1992 überraschend?", "Dänemark"],
+    ["Wer gewann 2004 die Fußball-EM sensationell?", "Griechenland"],
+    ["Welche Sportart nutzt den Begriff „Triple Axel“?", "Eiskunstlauf"],
+    ["Welcher Fußballverein gewann 1999 das Champions-League-Finale durch zwei späte Tore?", "Manchester United"],
+    ["Wer hält den Rekord für die meisten Formel-1-Siege?", "Lewis Hamilton"],
+    ["Welche Nation gewann die meisten Copa-América-Titel?", "Argentinien und Uruguay"],
+    ["In welcher Sportart gibt es den Begriff „No-Hitter“?", "Baseball"],
+    ["Wer gewann die meisten olympischen Goldmedaillen insgesamt?", "Michael Phelps"],
+    ["Welche Nation gewann die Fußball-WM 2006?", "Italien"],
+    ["Welche Sportart nutzt den Begriff „Scrum“?", "Rugby"],
+    ["Wer gewann Wimbledon 2001 als Wildcard-Spieler?", "Goran Ivanišević"],
+    ["Welche Nation gewann Olympia-Gold im Fußball 2016 der Männer?", "Brasilien"],
+    ["Wer ist Rekordspieler der deutschen Fußballnationalmannschaft?", "Lothar Matthäus"],
+    ["Welche Sportart nutzt den Begriff „Strikeout“?", "Baseball"],
+    ["Wer gewann die erste Formel-1-Weltmeisterschaft 1950?", "Giuseppe Farina"],
+    ["Welche Nation gewann die meisten olympischen Goldmedaillen im Basketball?", "USA"],
+    ["Welche Sportart nutzt den Begriff „Tiebreak“?", "Tennis"],
+    ["Wer gewann die Champions League 2012 mit Chelsea als Trainer?", "Roberto Di Matteo"],
+    ["Welche Nation gewann die Rugby-WM 2023?", "Südafrika"],
+    ["Wer hält den NBA-Rekord für die meisten Punkte in einem Spiel?", "Wilt Chamberlain"],
+    ["Welche Sportart nutzt den Begriff „Powerplay“?", "Eishockey"],
+    ["Wer gewann die Fußball-WM 2010?", "Spanien"],
+    ["Welche Nation gewann die erste Frauenfußball-WM 1991?", "USA"],
+    ["Wie heißt der berühmte Cricket-Wettbewerb zwischen England und Australien?", "The Ashes"],
+    ["Wer gewann die meisten Ballon-d’Or-Auszeichnungen?", "Lionel Messi"],
+    ["Welche Sportart nutzt den Begriff „Century Break“?", "Snooker"],
+    ["Wer gewann die Formel-1-WM 2007?", "Kimi Räikkönen"],
+    ["Welche Nation gewann die Fußball-WM 1978?", "Argentinien"],
+    ["Welche Sportart nutzt den Begriff „Green Jacket“?", "Golf"],
+    ["Wer gewann die meisten MotoGP-WM-Titel in der Königsklasse?", "Giacomo Agostini"],
+    ["Welche Nation gewann die erste Copa América?", "Uruguay"],
+    ["Wer erzielte das „Tor des Jahrhunderts“ 1986?", "Diego Maradona"],
+    ["Welche Sportart nutzt den Begriff „Checkmate“?", "Schach"],
+    ["Wer hält den Rekord für die meisten NHL-Punkte?", "Wayne Gretzky"],
+    ["Welche Nation gewann die Fußball-WM 1966?", "England"],
+    ["Welche Sportart nutzt den Begriff „Spare“?", "Bowling"],
+    ["Wer gewann die Champions League 2005 nach 0:3-Rückstand zur Halbzeit?", "FC Liverpool"],
+    ["Welche Nation gewann die Volleyball-WM der Männer 2022?", "Italien"],
+    ["Welche Sportart nutzt den Begriff „Fosbury-Flop“?", "Hochsprung"],
+    ["Wer gewann die meisten Wimbledon-Titel im Herreneinzel?", "Roger Federer"],
+    ["Welche Nation gewann die Fußball-WM 1954?", "Deutschland"],
+    ["Wer hält den Rekord für die meisten Assists in der NBA?", "John Stockton"],
+    ["Welche Sportart nutzt den Begriff „Bullseye“?", "Darts"],
+    ["Wer gewann die Formel-1-WM 1994?", "Michael Schumacher"],
+    ["Welche Nation gewann die Fußball-WM 2002?", "Brasilien"],
+    ["Welche Sportart nutzt den Begriff „Break Point“?", "Tennis"],
+    ["Wer ist Rekordtorschütze der Champions League?", "Cristiano Ronaldo"],
+    ["Welche Nation gewann die erste Handball-WM der Männer?", "Deutschland"],
+    ["Welche Sportart nutzt den Begriff „Duck“?", "Cricket"],
+    ["Wer gewann Olympia-Gold im 100-m-Finale 2008?", "Usain Bolt"],
+    ["Welche Nation gewann die Fußball-WM 1982?", "Italien"],
+    ["Welcher Verein gewann die meisten Champions-League-Titel?", "Real Madrid"],
+    ["Welche Sportart nutzt den Begriff „Offside“?", "Fußball/Rugby"],
+    ["Wer gewann die Tour de France 1997 als erster Deutscher?", "Jan Ullrich"],
+    ["Welche Nation gewann die Basketball-WM 2023?", "Deutschland"],
+    ["Welche Sportart nutzt den Begriff „Ruck“?", "Rugby"],
+    ["Wer gewann die Formel-1-WM 2021?", "Max Verstappen"],
+    ["Welche Nation gewann die Fußball-WM 2022?", "Argentinien"],
+    ["Welche Sportart nutzt den Begriff „Vault“?", "Turnen"],
+    ["Wer gewann den Super Bowl LVII?", "Kansas City Chiefs"],
+    ["Welche Nation gewann die Fußball-EM 2016?", "Portugal"],
+    ["Wer hält den Rekord für die meisten Tore in einer WM-Endrunde?", "Just Fontaine"],
+    ["Welche Sportart nutzt den Begriff „Albatross“?", "Golf"],
+    ["Wer gewann die meisten Snooker-WM-Titel in der modernen Ära?", "Stephen Hendry und Ronnie O’Sullivan"],
+    ["Welche Nation gewann die erste Eishockey-WM?", "Kanada"],
+    ["Wer gewann die Formel-1-WM 2005 und 2006?", "Fernando Alonso"]
+];
+
+const sportGeniusQuestionPairs = [
+    ...sportHardQuestionPairs,
+    ...sportGeniusExtraQuestionPairs
+];
+
 const generalEasyQuestionPairs = [
     ["Was ist die Hauptstadt von Deutschland?", "Berlin"],
     ["Wie viele Kontinente gibt es?", "7"],
@@ -1122,18 +1230,7 @@ const questionData = {
         easy: buildQuestionItemsFromPairs(sportEasyQuestionPairs),
         medium: buildQuestionItemsFromPairs(sportMediumQuestionPairs),
         hard: buildQuestionItemsFromPairs(sportHardQuestionPairs),
-        genius: [
-            ["Wo fanden 1896 die ersten Olympischen Spiele der Neuzeit statt?", "Athen", ["Paris", "London", "Rom"]],
-            ["Welche Farbe hat der mittlere Ring im olympischen Symbol?", "Schwarz", ["Grün", "Rot", "Gelb"]],
-            ["Zu welcher Sportart gehört der Begriff Keirin?", "Bahnradfahren", ["Rudern", "Fechten", "Curling"]],
-            ["Wie heißt im Baseball ein Schlag über alle vier Bases?", "Home Run", ["Touchdown", "Birdie", "Ippon"]],
-            ["Welcher Schachweltmeister besiegte 1972 Boris Spasski?", "Bobby Fischer", ["Garry Kasparov", "Magnus Carlsen", "Anatoli Karpow"]],
-            ["Welche Schachfigur kann beim Rochieren bewegt werden?", "Turm", ["Dame", "Läufer", "Springer"]],
-            ["Wie heißt die Bootsklasse im Rudern mit acht Ruderern und Steuermann?", "Achter", ["Vierer", "Skiff", "Doppelzweier"]],
-            ["Welche Stadt war 1924 Gastgeber der ersten Olympischen Winterspiele?", "Chamonix", ["St. Moritz", "Oslo", "Innsbruck"]],
-            ["Welcher Begriff bezeichnet im Cricket drei Wickets mit drei aufeinanderfolgenden Würfen?", "Hattrick", ["Century", "Maiden", "Boundary"]],
-            ["In welcher Kampfsportart gibt es die Graduierung Dan?", "Judo", ["Polo", "Curling", "Radsport"]]
-        ]
+        genius: buildQuestionItemsFromPairs(sportGeniusQuestionPairs)
     },
     "Musik": {
         easy: [
@@ -1862,6 +1959,10 @@ function getCleanQuestionItemsForDifficulty(difficulty, categoryName) {
 
     if (categoryName === "Sport" && difficulty === "hard") {
         return buildQuestionItemsFromPairs(sportHardQuestionPairs);
+    }
+
+    if (categoryName === "Sport" && difficulty === "genius") {
+        return buildQuestionItemsFromPairs(sportGeniusQuestionPairs);
     }
 
     const questionsByDifficulty = {
@@ -3001,6 +3102,7 @@ loadFacts();
 loadStoredPlayerAccount();
 document.querySelector(".answer-btn").addEventListener("click", showNextFact);
 factIntervalId = setInterval(loadFacts, 8000);
+
 
 
 
