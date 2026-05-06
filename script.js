@@ -45,7 +45,7 @@ function createWrongAnswers(question, answer, fallbackAnswers) {
     pools.flat().forEach((candidate) => {
         if (
             wrongAnswers.length < 3
-            && candidate !== answer
+            && !isSameOrContainedAnswer(candidate, answer)
             && !wrongAnswers.includes(candidate)
         ) {
             wrongAnswers.push(candidate);
@@ -53,6 +53,29 @@ function createWrongAnswers(question, answer, fallbackAnswers) {
     });
 
     return wrongAnswers;
+}
+
+function normalizeAnswerOption(value) {
+    return value
+        .toLowerCase()
+        .normalize("NFD")
+        .replace(/[\u0300-\u036f]/g, "")
+        .replace(/[’']/g, "")
+        .replace(/[^a-z0-9äöüß]+/g, " ")
+        .trim();
+}
+
+function isSameOrContainedAnswer(candidate, answer) {
+    const normalizedCandidate = normalizeAnswerOption(candidate);
+    const normalizedAnswer = normalizeAnswerOption(answer);
+
+    if (!normalizedCandidate || !normalizedAnswer) {
+        return candidate === answer;
+    }
+
+    return normalizedCandidate === normalizedAnswer
+        || normalizedAnswer.includes(normalizedCandidate)
+        || normalizedCandidate.includes(normalizedAnswer);
 }
 
 function createNumericWrongAnswers(answer) {
@@ -91,6 +114,7 @@ function createNumericWrongAnswers(answer) {
 function getDistractorPool(question, answer) {
     const lowerQuestion = question.toLowerCase();
     const lowerAnswer = answer.toLowerCase();
+    const sportPersonPool = getSportPersonDistractorPool(lowerQuestion, answer);
 
     if (/^\d/.test(answer)) {
         return distractorPools.numbers;
@@ -175,6 +199,10 @@ function getDistractorPool(question, answer) {
         return distractorPools.sciences;
     }
 
+    if (sportPersonPool) {
+        return sportPersonPool;
+    }
+
     if (
         lowerQuestion.includes("wer ")
         || lowerQuestion.includes("schrieb")
@@ -204,6 +232,56 @@ function getDistractorPool(question, answer) {
     }
 
     return distractorPools.general;
+}
+
+function getSportPersonDistractorPool(lowerQuestion, answer) {
+    const normalizedAnswer = normalizeAnswerOption(answer);
+    const asksForPerson = lowerQuestion.includes("wer ")
+        || lowerQuestion.includes("welcher tennisspieler")
+        || lowerQuestion.includes("welcher formel-1-fahrer")
+        || lowerQuestion.includes("welcher boxer")
+        || lowerQuestion.includes("welcher sportler");
+
+    const sportPersonPools = [
+        {
+            keywords: ["fußball", "bundesliga", "champions league", "ballon", "wm", "em", "premier league", "nationalmannschaft"],
+            pool: distractorPools.sportPeopleFootball
+        },
+        {
+            keywords: ["basketball", "nba"],
+            pool: distractorPools.sportPeopleBasketball
+        },
+        {
+            keywords: ["tennis", "grand-slam", "grand slam", "wimbledon", "french open", "australian open"],
+            pool: distractorPools.sportPeopleTennis
+        },
+        {
+            keywords: ["formel", "motorsport", "motogp", "monaco grand prix", "brawn gp"],
+            pool: distractorPools.sportPeopleMotorsport
+        },
+        {
+            keywords: ["box", "mma", "ufc", "knockout"],
+            pool: distractorPools.sportPeopleCombat
+        }
+    ];
+
+    const answerPool = sportPersonPools.find(({ pool }) =>
+        pool.some((name) => normalizeAnswerOption(name) === normalizedAnswer)
+    );
+
+    if (answerPool) {
+        return answerPool.pool;
+    }
+
+    if (!asksForPerson) {
+        return null;
+    }
+
+    const questionPool = sportPersonPools.find(({ keywords }) =>
+        keywords.some((keyword) => lowerQuestion.includes(keyword))
+    );
+
+    return questionPool ? questionPool.pool : null;
 }
 
 const distractorPools = {
@@ -284,6 +362,41 @@ const distractorPools = {
         "Triathlon", "Tor", "Strafraum", "Finale", "Champion", "Konter",
         "Halbzeitpause", "Nachspielzeit", "Auswechslung", "Startschuss",
         "Olympiasieger", "Siebenmeter", "Freistoßtor", "Boxengasse"
+    ],
+    sportPeopleFootball: [
+        "Lionel Messi", "Cristiano Ronaldo", "Pelé", "Diego Maradona",
+        "Zinedine Zidane", "Ronaldinho", "David Beckham", "Andrés Iniesta",
+        "Bastian Schweinsteiger", "Mesut Özil", "Neymar", "Kylian Mbappé",
+        "Erling Haaland", "Robert Lewandowski", "Lamine Yamal", "Virgil van Dijk",
+        "Luka Modrić", "Antoine Griezmann", "Jamal Musiala", "Toni Kroos"
+    ],
+    sportPeopleBasketball: [
+        "Michael Jordan", "LeBron James", "Kobe Bryant", "Shaquille O'Neal",
+        "Magic Johnson", "Larry Bird", "Wilt Chamberlain", "Kareem Abdul-Jabbar",
+        "Allen Iverson", "Dennis Rodman", "Dirk Nowitzki", "Stephen Curry",
+        "Kevin Durant", "Giannis Antetokounmpo", "Nikola Jokić", "Joel Embiid",
+        "Ja Morant", "Luka Dončić", "Victor Wembanyama", "Jayson Tatum"
+    ],
+    sportPeopleTennis: [
+        "Roger Federer", "Rafael Nadal", "Novak Djokovic", "Steffi Graf",
+        "Serena Williams", "Boris Becker", "Pete Sampras", "Maria Sharapova",
+        "Andy Murray", "Stan Wawrinka", "Carlos Alcaraz", "Jannik Sinner",
+        "Alexander Zverev", "Iga Świątek", "Aryna Sabalenka", "Naomi Osaka",
+        "Coco Gauff", "Daniil Medvedev", "Stefanos Tsitsipas", "Venus Williams"
+    ],
+    sportPeopleMotorsport: [
+        "Michael Schumacher", "Ayrton Senna", "Lewis Hamilton", "Max Verstappen",
+        "Sebastian Vettel", "Fernando Alonso", "Niki Lauda", "Mika Häkkinen",
+        "Kimi Räikkönen", "Nico Rosberg", "Jenson Button", "Charles Leclerc",
+        "Lando Norris", "Oscar Piastri", "George Russell", "Carlos Sainz Jr.",
+        "Valentino Rossi", "Daniel Ricciardo", "Jacques Villeneuve", "Sergio Pérez"
+    ],
+    sportPeopleCombat: [
+        "Muhammad Ali", "Mike Tyson", "Manny Pacquiao", "Conor McGregor",
+        "Khabib Nurmagomedov", "Jon Jones", "Anderson Silva", "Alex Pereira",
+        "Francis Ngannou", "Israel Adesanya", "Sean O'Malley", "Ronda Rousey",
+        "Amanda Nunes", "Valentina Shevchenko", "Stipe Miocic", "Charles Oliveira",
+        "Dustin Poirier", "Georges St-Pierre", "Kamaru Usman", "Alex Volkanovski"
     ],
     numbers: [
         "1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12", "16", "24",
