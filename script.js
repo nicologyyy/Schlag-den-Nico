@@ -24,56 +24,440 @@ const facts = [
     "Es gibt mehr mögliche Schachpartien als Atome im beobachtbaren Universum."
 ];
 
+function buildQuestionItemsFromPairs(pairs) {
+    const answerPool = [...new Set(pairs.map((pair) => pair[1]))];
+
+    return pairs.map(([question, answer], index) => {
+        const wrongAnswers = [];
+        let offset = 1;
+
+        while (wrongAnswers.length < 3) {
+            const candidate = answerPool[(index + offset) % answerPool.length];
+
+            if (candidate !== answer && !wrongAnswers.includes(candidate)) {
+                wrongAnswers.push(candidate);
+            }
+
+            offset += 1;
+        }
+
+        return [question, answer, wrongAnswers];
+    });
+}
+
+const generalEasyQuestionPairs = [
+    ["Was ist die Hauptstadt von Deutschland?", "Berlin"],
+    ["Wie viele Kontinente gibt es?", "7"],
+    ["Welcher Planet ist der Sonne am nächsten?", "Merkur"],
+    ["Wie heißt das größte Meer der Erde?", "Pazifik"],
+    ["Welche Farbe hat ein Smaragd?", "Grün"],
+    ["Wie viele Tage hat ein Schaltjahr?", "366"],
+    ["Wer malte die Mona Lisa?", "Leonardo da Vinci"],
+    ["Wie heißt die Hauptstadt von Frankreich?", "Paris"],
+    ["Welches Tier wird „König der Tiere“ genannt?", "Löwe"],
+    ["Wie viele Minuten hat eine Stunde?", "60"],
+    ["Was ist die größte Wüste der Welt?", "Sahara"],
+    ["Wie heißt der höchste Berg der Erde?", "Mount Everest"],
+    ["Welches Gas brauchen Menschen zum Atmen?", "Sauerstoff"],
+    ["Wie viele Bundesländer hat Deutschland?", "16"],
+    ["Welche Sprache spricht man in Spanien?", "Spanisch"],
+    ["Wie heißt der größte Ozean?", "Pazifischer Ozean"],
+    ["Welches Tier legt Eier?", "Huhn"],
+    ["Wie viele Sekunden hat eine Minute?", "60"],
+    ["Welche Farbe entsteht aus Blau und Gelb?", "Grün"],
+    ["Wie heißt der Erfinder der Glühbirne?", "Thomas Edison"],
+    ["In welchem Land stehen die Pyramiden?", "Ägypten"],
+    ["Wie viele Beine hat eine Spinne?", "8"],
+    ["Wie heißt die Hauptstadt von Italien?", "Rom"],
+    ["Was ist H2O?", "Wasser"],
+    ["Welches Organ pumpt Blut durch den Körper?", "Das Herz"],
+    ["Wie viele Stunden hat ein Tag?", "24"],
+    ["Wie heißt der längste Fluss der Welt?", "Nil"],
+    ["Welches Tier gibt Milch?", "Kuh"],
+    ["Welche Farbe hat die Sonne auf Zeichnungen meistens?", "Gelb"],
+    ["Wie nennt man gefrorenes Wasser?", "Eis"],
+    ["Welcher Kontinent ist Deutschland?", "Europa"],
+    ["Wie heißt die Hauptstadt von England?", "London"],
+    ["Welche Jahreszeit kommt nach dem Sommer?", "Herbst"],
+    ["Wie viele Monate hat ein Jahr?", "12"],
+    ["Welche Frucht ist gelb und krumm?", "Banane"],
+    ["Wie heißt der rote Planet?", "Mars"],
+    ["Welches Tier bellt?", "Hund"],
+    ["Wie viele Spieler hat eine Fußballmannschaft auf dem Feld?", "11"],
+    ["Was braucht Feuer zum Brennen?", "Sauerstoff"],
+    ["Welche Farbe hat Kohle meistens?", "Schwarz"],
+    ["Wer schrieb „Harry Potter“?", "J.K. Rowling"],
+    ["Wie heißt die Hauptstadt von Österreich?", "Wien"],
+    ["Welche Tiere leben im Wasser?", "Fische"],
+    ["Wie viele Zentimeter hat ein Meter?", "100"],
+    ["Welche Farbe hat Schnee?", "Weiß"],
+    ["Wie heißt unser Stern?", "Sonne"],
+    ["Welches Tier miaut?", "Katze"],
+    ["Wie viele Tage hat die Woche?", "7"],
+    ["Welche Form hat ein Fußball?", "Rund"],
+    ["Wie heißt das größte Land der Welt?", "Russland"],
+    ["Welche Farbe haben Smaragde?", "Grün"],
+    ["Welcher Vogel kann nicht fliegen?", "Pinguin"],
+    ["Wie heißt die Hauptstadt der USA?", "Washington D.C."],
+    ["Welche Jahreszeit kommt nach dem Winter?", "Frühling"],
+    ["Wie viele Finger hat ein Mensch normalerweise?", "10"],
+    ["Was misst man mit einem Thermometer?", "Temperatur"],
+    ["Welche Farbe hat Gras?", "Grün"],
+    ["Wie heißt das schnellste Landtier?", "Gepard"],
+    ["Welche Sprache spricht man in Deutschland?", "Deutsch"],
+    ["Wie nennt man ein Baby-Schaf?", "Lamm"],
+    ["Wie viele Seiten hat ein Würfel?", "6"],
+    ["Was trinken Pflanzen hauptsächlich?", "Wasser"],
+    ["Welche Farbe hat der Himmel bei gutem Wetter?", "Blau"],
+    ["Wie heißt die Hauptstadt von Japan?", "Tokio"],
+    ["Welches Tier ist für seinen langen Hals bekannt?", "Giraffe"],
+    ["Wie viele Augen hat ein Mensch normalerweise?", "2"],
+    ["Welche Frucht ist rot und hat kleine Kerne außen?", "Erdbeere"],
+    ["Wie heißt der größte Kontinent?", "Asien"],
+    ["Welches Tier lebt in Australien und hüpft?", "Känguru"],
+    ["Welche Farbe hat eine Zitrone?", "Gelb"],
+    ["Wie heißt die Hauptstadt von Kanada?", "Ottawa"],
+    ["Wie nennt man einen Wissenschaftler, der Sterne erforscht?", "Astronom"],
+    ["Welche Farbe entsteht aus Rot und Weiß?", "Rosa"],
+    ["Welches Tier trägt sein Haus auf dem Rücken?", "Schnecke"],
+    ["Wie viele Stunden hat eine halbe Stunde?", "0,5 Stunden"],
+    ["Welches Instrument hat schwarze und weiße Tasten?", "Klavier"],
+    ["Wie heißt die Hauptstadt von China?", "Peking"],
+    ["Welche Frucht wird zu Wein verarbeitet?", "Traube"],
+    ["Welcher Planet ist für seine Ringe bekannt?", "Saturn"],
+    ["Wie viele Räder hat ein Fahrrad?", "2"],
+    ["Welches Tier ist das größte Säugetier der Welt?", "Blauwal"],
+    ["Welche Farbe hat eine Orange?", "Orange"],
+    ["Wie heißt die Hauptstadt von Australien?", "Canberra"],
+    ["Welche Tiere geben Wolle?", "Schafe"],
+    ["Wie viele Monate haben 31 Tage?", "7"],
+    ["Wie heißt die Währung in Deutschland?", "Euro"],
+    ["Welches Tier kann besonders gut klettern?", "Affe"],
+    ["Wie heißt das Gegenteil von heiß?", "Kalt"],
+    ["Welche Farbe haben Flamingos meistens?", "Rosa"],
+    ["Wie nennt man einen Arzt für Tiere?", "Tierarzt"],
+    ["Wie viele Kontinente gibt es auf der Erde?", "7"],
+    ["Welche Farbe hat ein Stoppschild?", "Rot"],
+    ["Wie heißt die Hauptstadt von Griechenland?", "Athen"],
+    ["Welches Tier lebt am Nordpol?", "Eisbär"],
+    ["Wie viele Monate hat der Februar normalerweise?", "28 Tage"],
+    ["Welches Obst ist innen grün und außen braun?", "Kiwi"],
+    ["Welche Farbe hat Schokolade meistens?", "Braun"],
+    ["Wie nennt man einen Menschen, der Bücher schreibt?", "Autor"],
+    ["Welches Tier ist bekannt für seinen Rüssel?", "Elefant"],
+    ["Wie heißt unser Planet?", "Erde"]
+];
+
+const generalMediumQuestionPairs = [
+    ["Welches Element hat das chemische Symbol „Fe“?", "Eisen"],
+    ["Wer schrieb das Drama „Faust“?", "Johann Wolfgang von Goethe"],
+    ["Wie heißt die Hauptstadt von Kanada?", "Ottawa"],
+    ["Welcher Planet ist für seine großen Ringe bekannt?", "Saturn"],
+    ["Wie viele Knochen hat ein erwachsener Mensch ungefähr?", "206"],
+    ["Welcher Ozean liegt zwischen Amerika und Europa?", "Atlantik"],
+    ["In welchem Jahr fiel die Berliner Mauer?", "1989"],
+    ["Wie nennt man die größte Wüste Asiens?", "Gobi"],
+    ["Wer malte „Die Sternennacht“?", "Vincent van Gogh"],
+    ["Welches Land hat die meisten Einwohner?", "Indien"],
+    ["Was ist die Hauptstadt von Australien?", "Canberra"],
+    ["Wie nennt man Tiere, die nur Pflanzen essen?", "Pflanzenfresser"],
+    ["Welches Gas entsteht hauptsächlich bei der Fotosynthese?", "Sauerstoff"],
+    ["Wie viele Herzen hat ein Oktopus?", "3"],
+    ["Wie heißt der längste Fluss Europas?", "Wolga"],
+    ["Welche Sprache wird in Brasilien gesprochen?", "Portugiesisch"],
+    ["Wie nennt man den kleinsten Knochen im Körper?", "Steigbügel"],
+    ["Welcher Kontinent hat die meisten Länder?", "Afrika"],
+    ["Wie heißt der höchste Berg Deutschlands?", "Zugspitze"],
+    ["Wer erfand den Buchdruck?", "Johannes Gutenberg"],
+    ["Welche Einheit misst elektrische Spannung?", "Volt"],
+    ["Wie viele Spieler stehen bei einem Basketballteam gleichzeitig auf dem Feld?", "5"],
+    ["Welche Farbe entsteht aus Blau und Rot?", "Lila/Violett"],
+    ["Wie nennt man die Angst vor engen Räumen?", "Klaustrophobie"],
+    ["In welchem Land steht das Kolosseum?", "Italien"],
+    ["Welcher Planet ist der Erde am ähnlichsten in Größe?", "Venus"],
+    ["Wie heißt die Hauptstadt von Neuseeland?", "Wellington"],
+    ["Welches Organ produziert Insulin?", "Bauchspeicheldrüse"],
+    ["Wie viele Seiten hat ein Hexagon?", "6"],
+    ["Wer war der erste Mensch auf dem Mond?", "Neil Armstrong"],
+    ["Welche Währung gibt es in Japan?", "Yen"],
+    ["Wie nennt man die Wissenschaft vom Weltall?", "Astronomie"],
+    ["Welches Land grenzt an Deutschland und Spanien?", "Frankreich"],
+    ["Wie heißt die größte Insel im Mittelmeer?", "Sizilien"],
+    ["Wie viele Liter sind ein Kubikmeter?", "1000"],
+    ["Welche Blutgruppe gilt als Universalspender?", "0 negativ"],
+    ["Welcher Vogel ist das Symbol der USA?", "Weißkopfseeadler"],
+    ["Wie heißt das größte Organ des Menschen?", "Haut"],
+    ["Welche Stadt wird „Big Apple“ genannt?", "New York"],
+    ["Wie viele Farben hat ein Regenbogen normalerweise?", "7"],
+    ["Wie nennt man den Vorgang, bei dem Wasser verdampft?", "Verdunstung"],
+    ["Welcher Kontinent liegt komplett auf der Südhalbkugel?", "Antarktika"],
+    ["Wie heißt die Hauptstadt von Argentinien?", "Buenos Aires"],
+    ["Wer komponierte die „Mondscheinsonate“?", "Ludwig van Beethoven"],
+    ["Welches Metall ist flüssig bei Raumtemperatur?", "Quecksilber"],
+    ["Wie viele Planeten gehören zum Sonnensystem?", "8"],
+    ["Welche Sprache spricht man hauptsächlich in Mexiko?", "Spanisch"],
+    ["Wie nennt man die äußere Schicht der Erde?", "Erdkruste"],
+    ["Welches Tier gilt als schnellstes Landtier?", "Gepard"],
+    ["Welche Stadt war früher in Ost- und Westteil getrennt?", "Berlin"],
+    ["Was ist die Hauptstadt von Südafrika?", "Pretoria"],
+    ["Wie heißt der größte Knochen des Menschen?", "Oberschenkelknochen"],
+    ["Welche Einheit misst Stromstärke?", "Ampere"],
+    ["Wie nennt man die Lehre von Karten?", "Kartografie"],
+    ["Welches Meer liegt zwischen Europa und Afrika?", "Mittelmeer"],
+    ["Welche Farbe absorbiert am meisten Sonnenlicht?", "Schwarz"],
+    ["Wie heißt das größte Säugetier der Welt?", "Blauwal"],
+    ["Wer entwickelte die Relativitätstheorie?", "Albert Einstein"],
+    ["Wie viele Zähne hat ein Erwachsener normalerweise?", "32"],
+    ["Wie nennt man den Mittelpunkt eines Hurrikans?", "Auge"],
+    ["Welche Stadt ist die Hauptstadt der Türkei?", "Ankara"],
+    ["Wie nennt man Tiere, die nachts aktiv sind?", "Nachtaktiv/Nachttiere"],
+    ["Wie viele Kontinente gibt es?", "7"],
+    ["Welcher Planet ist der größte im Sonnensystem?", "Jupiter"],
+    ["Wie heißt die Hauptstadt von Thailand?", "Bangkok"],
+    ["Welches Instrument misst Erdbeben?", "Seismograf"],
+    ["Welche chemische Formel hat Kochsalz?", "NaCl"],
+    ["Wie nennt man den höchsten Punkt einer Welle?", "Wellenberg"],
+    ["Welche Sprache hat die meisten Muttersprachler weltweit?", "Chinesisch/Mandarin"],
+    ["Wie heißt die Hauptstadt von Ägypten?", "Kairo"],
+    ["Welches Tier kann seinen Kopf fast komplett drehen?", "Eule"],
+    ["Wie nennt man den Übergang von fest zu flüssig?", "Schmelzen"],
+    ["Welche Stadt ist für den Eiffelturm bekannt?", "Paris"],
+    ["Wie viele Millimeter sind ein Zentimeter?", "10"],
+    ["Welche Kraft zieht Dinge zur Erde?", "Gravitation"],
+    ["Wie heißt das größte Korallenriff der Welt?", "Great Barrier Reef"],
+    ["Wer schrieb „Romeo und Julia“?", "William Shakespeare"],
+    ["Wie nennt man die Wissenschaft von den Tieren?", "Zoologie"],
+    ["Welche Wüste liegt in Afrika?", "Sahara"],
+    ["Wie heißt die Hauptstadt von Südkorea?", "Seoul"],
+    ["Welches Organ reinigt das Blut?", "Niere"],
+    ["Wie nennt man die kleinste Einheit eines Computers?", "Bit"],
+    ["Welche Farbe hat Kupfersulfat oft?", "Blau"],
+    ["Wie viele Sekunden hat eine Stunde?", "3600"],
+    ["Welcher Planet ist am weitesten von der Sonne entfernt?", "Neptun"],
+    ["Wie heißt der größte Regenwald der Erde?", "Amazonas-Regenwald"],
+    ["Welche Sportart betreibt man in Wimbledon?", "Tennis"],
+    ["Wie nennt man Tiere ohne Wirbelsäule?", "Wirbellose"],
+    ["Welche Stadt liegt auf zwei Kontinenten?", "Istanbul"],
+    ["Wie heißt die Hauptstadt von Norwegen?", "Oslo"],
+    ["Welche Einheit misst Frequenz?", "Hertz"],
+    ["Wer entdeckte Amerika 1492?", "Christoph Kolumbus"],
+    ["Wie nennt man die Wissenschaft vom Wetter?", "Meteorologie"],
+    ["Welches Tier ist das größte Raubtier an Land?", "Eisbär"],
+    ["Wie heißt der längste Fluss Südamerikas?", "Amazonas"],
+    ["Welche Farbe hat Chlorophyll?", "Grün"],
+    ["Wie viele Herzen hat eine Qualle?", "Keins"],
+    ["Welche Stadt ist die Hauptstadt von China?", "Peking"],
+    ["Wie nennt man die Umwandlung von Wasser zu Eis?", "Gefrieren"],
+    ["Welche Sprache spricht man in Österreich hauptsächlich?", "Deutsch"]
+];
+const generalHardQuestionPairs = [
+    ["Wie heißt der physikalische Effekt, bei dem Zeit bei hoher Geschwindigkeit langsamer vergeht?", "Zeitdilatation"],
+    ["Wer schrieb „Also sprach Zarathustra“?", "Friedrich Nietzsche"],
+    ["Welches Element hat die Ordnungszahl 92?", "Uran"],
+    ["Wie heißt die Hauptstadt von Kasachstan?", "Astana"],
+    ["Welche Einheit misst radioaktive Strahlung?", "Becquerel"],
+    ["Wie nennt man die Verschmelzung von Atomkernen?", "Kernfusion"],
+    ["Welcher Planet besitzt den größten Vulkan im Sonnensystem?", "Mars"],
+    ["Wie heißt die tiefste bekannte Meeresstelle der Erde?", "Challengertief"],
+    ["Wer entwickelte die heliozentrische Weltanschauung?", "Nikolaus Kopernikus"],
+    ["Welche Sprache gehört nicht zur indogermanischen Sprachfamilie?", "Finnisch"],
+    ["Wie viele Chromosomen hat ein Mensch normalerweise?", "46"],
+    ["Welche Stadt war Hauptstadt des Byzantinischen Reiches?", "Konstantinopel"],
+    ["Wie nennt man die Angst vor offenen Plätzen?", "Agoraphobie"],
+    ["Welches chemische Element ist das leichteste?", "Wasserstoff"],
+    ["Wer komponierte die Oper „Carmen“?", "Georges Bizet"],
+    ["Welcher Fluss fließt durch Bagdad?", "Tigris"],
+    ["Wie nennt man die Wissenschaft von Fossilien?", "Paläontologie"],
+    ["Welche Farbe absorbiert die meiste Wärme?", "Schwarz"],
+    ["Wie heißt das größte bekannte Sternbild?", "Wasserschlange"],
+    ["Welche Währung hatte Spanien vor dem Euro?", "Peseta"],
+    ["Wie nennt man den Zerfall eines Atomkerns?", "Radioaktiver Zerfall"],
+    ["Welche Stadt liegt auf zwei Kontinenten?", "Istanbul"],
+    ["Wer malte „Die Geburt der Venus“?", "Sandro Botticelli"],
+    ["Wie viele Herzen hat ein Tintenfisch?", "3"],
+    ["Welche Säure befindet sich hauptsächlich im Magensaft?", "Salzsäure"],
+    ["Wie nennt man den größten Mond des Saturns?", "Titan"],
+    ["Welche Nation gewann die Fußball-WM 2014?", "Deutschland"],
+    ["Wie heißt die Hauptstadt von Neuseeland?", "Wellington"],
+    ["Welche Einheit misst elektrische Widerstände?", "Ohm"],
+    ["Welcher Kontinent hat die meisten Sprachen?", "Afrika"],
+    ["Wer schrieb „Krieg und Frieden“?", "Leo Tolstoi"],
+    ["Wie heißt die größte Wüste der Erde?", "Antarktische Eiswüste"],
+    ["Welche chemische Formel hat Ozon?", "O₃"],
+    ["Wie nennt man die Wissenschaft der Sterne?", "Astronomie"],
+    ["Welche Stadt ist die Hauptstadt von Mongolei?", "Ulaanbaatar"],
+    ["Welches Organ produziert Galle?", "Leber"],
+    ["Wie viele Knochen hat ein Neugeborenes ungefähr?", "300"],
+    ["Welche Sprache wird in Iran hauptsächlich gesprochen?", "Persisch/Farsi"],
+    ["Wie nennt man den Übergang von fest direkt zu gasförmig?", "Sublimation"],
+    ["Wer entwickelte die Gravitationstheorie?", "Isaac Newton"],
+    ["Welches Metall hat das chemische Symbol „Hg“?", "Quecksilber"],
+    ["Wie heißt die Hauptstadt von Bolivien?", "Sucre"],
+    ["Welche Einheit misst die Frequenz?", "Hertz"],
+    ["Wie nennt man Tiere ohne Wirbelsäule?", "Wirbellose"],
+    ["Welche Stadt wurde früher „Leningrad“ genannt?", "Sankt Petersburg"],
+    ["Wie viele Planeten sind Gasriesen?", "4"],
+    ["Wer schrieb „Der Prozess“?", "Franz Kafka"],
+    ["Wie nennt man den Fachbegriff für Erdbebenkunde?", "Seismologie"],
+    ["Welches Land besitzt die meisten Inseln weltweit?", "Schweden"],
+    ["Wie heißt die größte Drüse des Menschen?", "Leber"],
+    ["Welche chemische Formel hat Schwefelsäure?", "H₂SO₄"],
+    ["Welche Stadt ist die Hauptstadt von Äthiopien?", "Addis Abeba"],
+    ["Wie nennt man die Lehre vom Verhalten von Tieren?", "Ethologie"],
+    ["Welche Farbe hat oxidiertes Kupfer meistens?", "Grün"],
+    ["Wer komponierte die „9. Sinfonie“?", "Ludwig van Beethoven"],
+    ["Wie heißt das größte Korallenriff der Welt?", "Great Barrier Reef"],
+    ["Welche Einheit misst Luftdruck?", "Pascal"],
+    ["Welcher Planet hat die kürzeste Umlaufzeit um die Sonne?", "Merkur"],
+    ["Wie nennt man die Wissenschaft von Pilzen?", "Mykologie"],
+    ["Welche Stadt ist Hauptstadt von Sri Lanka?", "Sri Jayawardenepura Kotte"],
+    ["Welches Tier besitzt den stärksten Biss der Welt?", "Salzwasserkrokodil"],
+    ["Welche Sprache wird in Brasilien gesprochen?", "Portugiesisch"],
+    ["Wie nennt man den tiefsten Punkt der Erdoberfläche an Land?", "Totes Meer"],
+    ["Welche chemische Formel hat Ammoniak?", "NH₃"],
+    ["Wer malte „Guernica“?", "Pablo Picasso"],
+    ["Welche Einheit misst elektrische Leistung?", "Watt"],
+    ["Wie heißt die Hauptstadt von Laos?", "Vientiane"],
+    ["Wie viele Zeitzonen hat Russland?", "11"],
+    ["Welche Wüste liegt in der Mongolei?", "Gobi"],
+    ["Wie nennt man die Wissenschaft von Insekten?", "Entomologie"],
+    ["Welcher Ozean ist der kleinste?", "Arktischer Ozean"],
+    ["Welche Farbe hat Kobalt meistens?", "Blau"],
+    ["Wie heißt die Hauptstadt von Madagaskar?", "Antananarivo"],
+    ["Wer entwickelte die Relativitätstheorie?", "Albert Einstein"],
+    ["Welche chemische Formel hat Methan?", "CH₄"],
+    ["Wie nennt man Pflanzenfresser wissenschaftlich?", "Herbivoren"],
+    ["Welche Stadt ist für Machu Picchu bekannt?", "Cusco"],
+    ["Wie viele Rippen besitzt ein Mensch normalerweise?", "24"],
+    ["Welche Einheit misst radioaktive Strahlendosis?", "Sievert"],
+    ["Welcher Planet ist der heißeste im Sonnensystem?", "Venus"],
+    ["Welche Sprache wird in Afghanistan hauptsächlich gesprochen?", "Dari/Paschtu"],
+    ["Wie nennt man die Wissenschaft der Gifte?", "Toxikologie"],
+    ["Wer schrieb „Der alte Mann und das Meer“?", "Ernest Hemingway"],
+    ["Welche chemische Formel hat Kochsalz?", "NaCl"],
+    ["Wie heißt der längste Fluss Asiens?", "Jangtsekiang"],
+    ["Welche Stadt ist Hauptstadt von Ecuador?", "Quito"],
+    ["Wie nennt man die Angst vor Spinnen?", "Arachnophobie"],
+    ["Welches Organ produziert Insulin?", "Bauchspeicheldrüse"],
+    ["Welche Einheit misst magnetische Feldstärke?", "Tesla"],
+    ["Wer komponierte „Die vier Jahreszeiten“?", "Antonio Vivaldi"],
+    ["Wie heißt die Hauptstadt von Georgien?", "Tiflis"],
+    ["Welche chemische Formel hat Wasserstoffperoxid?", "H₂O₂"],
+    ["Wie nennt man den Prozess der Zellteilung?", "Mitose"],
+    ["Welcher Planet besitzt den größten bekannten Sturm?", "Jupiter"],
+    ["Welche Sprache wird in Ägypten gesprochen?", "Arabisch"],
+    ["Wie heißt der höchste Wasserfall Europas?", "Vinnufossen"],
+    ["Wer schrieb „Ulysses“?", "James Joyce"],
+    ["Welche Einheit misst Schallstärke?", "Dezibel"],
+    ["Wie nennt man die Wissenschaft von Karten?", "Kartografie"],
+    ["Welche Stadt war Hauptstadt des Osmanischen Reiches?", "Konstantinopel"],
+    ["Welche chemische Formel hat Ethanol?", "C₂H₅OH"],
+    ["Wie viele Herzen besitzt ein Regenwurm?", "5"],
+    ["Welche Stadt ist Hauptstadt von Myanmar?", "Naypyidaw"],
+    ["Welche Farbe hat Schwefel?", "Gelb"],
+    ["Wer entdeckte Penicillin?", "Alexander Fleming"],
+    ["Wie nennt man die Angst vor Wasser?", "Aquaphobie"],
+    ["Welcher Kontinent hat die größte Bevölkerung?", "Asien"],
+    ["Welche Einheit misst Energie?", "Joule"],
+    ["Wie heißt die Hauptstadt von Nepal?", "Kathmandu"],
+    ["Welche Sprache wird in Österreich gesprochen?", "Deutsch"],
+    ["Wie nennt man die Wissenschaft von Vögeln?", "Ornithologie"],
+    ["Welche chemische Formel hat Kohlensäure?", "H₂CO₃"],
+    ["Wer malte die Decke der Sixtinischen Kapelle?", "Michelangelo"],
+    ["Welcher Planet besitzt die meisten bekannten Monde?", "Saturn"],
+    ["Wie heißt die Hauptstadt von Albanien?", "Tirana"],
+    ["Welche Einheit misst Geschwindigkeit?", "Meter pro Sekunde"],
+    ["Wie nennt man den Zerfall organischer Stoffe durch Mikroorganismen?", "Verwesung"],
+    ["Welche Sprache wird in Ungarn gesprochen?", "Ungarisch"],
+    ["Wie heißt das größte Binnenland der Welt?", "Kasachstan"],
+    ["Welche Farbe entsteht aus Blau und Gelb?", "Grün"],
+    ["Welche chemische Formel hat Schwefeldioxid?", "SO₂"],
+    ["Wer schrieb „Faust“?", "Johann Wolfgang von Goethe"],
+    ["Welche Stadt ist Hauptstadt von Finnland?", "Helsinki"],
+    ["Wie nennt man Tiere, die nachts aktiv sind?", "Nachtaktiv/Nokturn"],
+    ["Welche Einheit misst Stromstärke?", "Ampere"],
+    ["Wie heißt die größte Insel der Welt?", "Grönland"],
+    ["Welche Sprache wird in Thailand gesprochen?", "Thai"],
+    ["Wie nennt man die Wissenschaft von Erbgut?", "Genetik"],
+    ["Welcher Planet hat den größten Mond?", "Jupiter"],
+    ["Welche Farbe haben Smaragde?", "Grün"],
+    ["Welche chemische Formel hat Lachgas?", "N₂O"],
+    ["Wer entwickelte die Evolutionstheorie?", "Charles Darwin"],
+    ["Wie heißt die Hauptstadt von Armenien?", "Jerewan"],
+    ["Welche Einheit misst Temperatur?", "Kelvin"],
+    ["Wie nennt man den Fachbegriff für Sternschnuppen?", "Meteore"],
+    ["Welche Sprache wird in Israel hauptsächlich gesprochen?", "Hebräisch"],
+    ["Wie heißt das größte Säugetier der Welt?", "Blauwal"],
+    ["Welche Farbe hat Chlorophyll?", "Grün"],
+    ["Welche Stadt ist Hauptstadt von Kroatien?", "Zagreb"],
+    ["Wie nennt man die Wissenschaft von dem menschlichen Körper?", "Anatomie"],
+    ["Welche chemische Formel hat Natronlauge?", "NaOH"],
+    ["Wer schrieb „Die Verwandlung“?", "Franz Kafka"],
+    ["Wie heißt die Hauptstadt von Litauen?", "Vilnius"],
+    ["Welche Einheit misst Druck?", "Pascal"],
+    ["Wie nennt man den Prozess der Wasserverdunstung über Pflanzen?", "Transpiration"],
+    ["Welche Sprache wird in Pakistan gesprochen?", "Urdu"],
+    ["Wie heißt das größte aktive Vulkangebiet Europas?", "Ätna"],
+    ["Welche Farbe hat Rubidium bei Flammenfärbung?", "Rot-Violett"],
+    ["Welche Stadt ist Hauptstadt von Slowenien?", "Ljubljana"],
+    ["Wie nennt man die Wissenschaft von den Meeren?", "Ozeanografie"],
+    ["Welche chemische Formel hat Salpetersäure?", "HNO₃"],
+    ["Wer komponierte „Eine kleine Nachtmusik“?", "Wolfgang Amadeus Mozart"],
+    ["Wie heißt die Hauptstadt von Estland?", "Tallinn"],
+    ["Welche Einheit misst elektrische Spannung?", "Volt"],
+    ["Wie nennt man Tiere mit gleichbleibender Körpertemperatur?", "Warmblüter"],
+    ["Welche Sprache wird in Bangladesch gesprochen?", "Bengalisch"],
+    ["Wie heißt der größte Planet im Sonnensystem?", "Jupiter"],
+    ["Welche Farbe hat Kupferoxid?", "Schwarz"],
+    ["Welche Stadt ist Hauptstadt von Belarus?", "Minsk"],
+    ["Wie nennt man die Wissenschaft der Krankheiten?", "Pathologie"],
+    ["Welche chemische Formel hat Calciumcarbonat?", "CaCO₃"],
+    ["Wer schrieb „Der Name der Rose“?", "Umberto Eco"],
+    ["Wie heißt die Hauptstadt von Usbekistan?", "Taschkent"],
+    ["Welche Einheit misst Frequenz?", "Hertz"],
+    ["Wie nennt man die Wissenschaft von Zellen?", "Zytologie"],
+    ["Welche Sprache wird in Indonesien gesprochen?", "Indonesisch"],
+    ["Wie heißt der größte Ozean der Erde?", "Pazifik"],
+    ["Welche Farbe hat Brom?", "Rotbraun"],
+    ["Welche Stadt ist Hauptstadt von Lettland?", "Riga"],
+    ["Wie nennt man die Wissenschaft vom Klima?", "Klimatologie"],
+    ["Welche chemische Formel hat Kalkwasser?", "Ca(OH)₂"],
+    ["Wer schrieb „Moby Dick“?", "Herman Melville"],
+    ["Wie heißt die Hauptstadt von Aserbaidschan?", "Baku"],
+    ["Welche Einheit misst Arbeit/Energie?", "Joule"],
+    ["Wie nennt man die Wissenschaft von Mineralien?", "Mineralogie"],
+    ["Welche Sprache wird in Malaysia gesprochen?", "Malaiisch"],
+    ["Wie heißt der höchste Berg Afrikas?", "Kilimandscharo"],
+    ["Welche Farbe hat Kalium bei Flammenfärbung?", "Violett"],
+    ["Welche Stadt ist Hauptstadt von Moldawien?", "Chișinău"],
+    ["Wie nennt man die Wissenschaft der Bewegungen?", "Kinematik"],
+    ["Welche chemische Formel hat Calciumoxid?", "CaO"],
+    ["Wer entdeckte die Radioaktivität?", "Henri Becquerel"],
+    ["Wie heißt die Hauptstadt von Nordkorea?", "Pjöngjang"],
+    ["Welche Einheit misst elektrische Ladung?", "Coulomb"],
+    ["Wie nennt man die Wissenschaft von Mikroorganismen?", "Mikrobiologie"],
+    ["Welche Sprache wird in der Mongolei gesprochen?", "Mongolisch"],
+    ["Wie heißt die größte Halbinsel der Welt?", "Arabische Halbinsel"],
+    ["Welche Farbe hat Natrium bei Flammenfärbung?", "Gelb"],
+    ["Welche Stadt ist Hauptstadt von Luxemburg?", "Luxemburg"],
+    ["Wie nennt man die Wissenschaft der Bewegungsabläufe im Körper?", "Biomechanik"],
+    ["Welche chemische Formel hat Magnesiumoxid?", "MgO"],
+    ["Wer schrieb „Don Quijote“?", "Miguel de Cervantes"],
+    ["Wie heißt die Hauptstadt von Island?", "Reykjavík"],
+    ["Welche Einheit misst Kapazität?", "Farad"],
+    ["Wie nennt man die Wissenschaft vom Nervensystem?", "Neurologie"],
+    ["Welche Sprache wird in Vietnam gesprochen?", "Vietnamesisch"],
+    ["Wie heißt die längste Gebirgskette der Welt?", "Anden"],
+    ["Welche Farbe hat Lithium bei Flammenfärbung?", "Karminrot"],
+    ["Welche Stadt ist Hauptstadt von Montenegro?", "Podgorica"],
+    ["Wie nennt man die Wissenschaft vom Denken?", "Philosophie"]
+];
 const questionData = {
     "Allgemeinwissen": {
-        easy: [
-            ["Was ist die Hauptstadt von Frankreich?", "Paris", ["Madrid", "Rom", "Berlin"]],
-            ["Was ist die Hauptstadt von Deutschland?", "Berlin", ["Wien", "Bern", "Hamburg"]],
-            ["Welcher ist der größte Planet im Sonnensystem?", "Jupiter", ["Mars", "Venus", "Merkur"]],
-            ["Welche Farbe hat eine reife Banane meistens?", "Gelb", ["Blau", "Rot", "Lila"]],
-            ["Wie viele Tage hat eine normale Woche?", "7", ["5", "8", "10"]],
-            ["Welches Tier bellt?", "Hund", ["Katze", "Kuh", "Pferd"]],
-            ["Wie viele Monate hat ein Jahr?", "12", ["10", "11", "13"]],
-            ["Welche Farbe hat der Himmel oft bei gutem Wetter?", "Blau", ["Grün", "Schwarz", "Rot"]],
-            ["Was braucht eine Pflanze zum Wachsen?", "Wasser", ["Sandwiches", "Benzin", "Plastik"]],
-            ["Welcher Kontinent liegt südlich von Europa?", "Afrika", ["Asien", "Australien", "Antarktis"]]
-        ],
-        medium: [
-            ["Wie viele Kontinente gibt es auf der Erde?", "7", ["5", "6", "8"]],
-            ["Wie lautet die chemische Formel für Wasser?", "H2O", ["CO2", "O2", "NaCl"]],
-            ["In welchem Land liegt Tokio?", "Japan", ["China", "Thailand", "Korea"]],
-            ["Welche Sprache spricht man in Brasilien?", "Portugiesisch", ["Spanisch", "Französisch", "Italienisch"]],
-            ["Was ist die kleinste Primzahl?", "2", ["1", "3", "4"]],
-            ["Wie heißt der größte Ozean der Erde?", "Pazifik", ["Atlantik", "Indischer Ozean", "Arktischer Ozean"]],
-            ["Welches Organ pumpt Blut durch den Körper?", "Herz", ["Leber", "Lunge", "Magen"]],
-            ["Wie heißt die Währung in Japan?", "Yen", ["Won", "Dollar", "Baht"]],
-            ["In welcher Stadt steht der Eiffelturm?", "Paris", ["London", "Rom", "Prag"]],
-            ["Wie viele Minuten hat eine Stunde?", "60", ["50", "70", "100"]]
-        ],
-        hard: [
-            ["Welches Land hat durch Überseegebiete die meisten Zeitzonen?", "Frankreich", ["Russland", "USA", "China"]],
-            ["Welches Element hat das chemische Symbol W?", "Wolfram", ["Wasserstoff", "Wismut", "Wolkenium"]],
-            ["Welcher Fluss wird oft als längster Fluss Afrikas genannt?", "Nil", ["Kongo", "Sambesi", "Niger"]],
-            ["Wer schrieb 'Der Prozess'?", "Franz Kafka", ["Thomas Mann", "Goethe", "Schiller"]],
-            ["Was ist die Hauptstadt von Kasachstan?", "Astana", ["Almaty", "Bischkek", "Taschkent"]],
-            ["Welches Land hieß früher Ceylon?", "Sri Lanka", ["Myanmar", "Kambodscha", "Nepal"]],
-            ["Welche Einheit misst elektrischen Widerstand?", "Ohm", ["Farad", "Tesla", "Pascal"]],
-            ["Wer entwickelte die Relativitätstheorie?", "Albert Einstein", ["Isaac Newton", "Niels Bohr", "Max Planck"]],
-            ["Welcher Planet hat die höchste Durchschnittstemperatur?", "Venus", ["Merkur", "Mars", "Jupiter"]],
-            ["Wie heißt die Hauptstadt der Mongolei?", "Ulaanbaatar", ["Astana", "Hanoi", "Vientiane"]]
-        ],
-        genius: [
-            ["Wie heißt die tiefste bekannte Stelle im Marianengraben?", "Challengertief", ["Horizon Deep", "Milwaukeetief", "Javatief"]],
-            ["Welchen ungefähren Wert hat die Euler-Mascheroni-Konstante?", "0,577", ["1,618", "2,718", "3,141"]],
-            ["Wer isolierte erstmals das Element Radium gemeinsam mit Marie Curie?", "Pierre Curie", ["Henri Becquerel", "Ernest Rutherford", "Niels Bohr"]],
-            ["Was ist die Hauptstadt von Bhutan?", "Thimphu", ["Dhaka", "Kathmandu", "Vientiane"]],
-            ["Was ist die SI-Einheit der magnetischen Flussdichte?", "Tesla", ["Weber", "Farad", "Siemens"]],
-            ["Wie heißt die Grenze zwischen Erdmantel und Erdkern?", "Gutenberg-Diskontinuität", ["Mohorovičić-Diskontinuität", "Lehmann-Diskontinuität", "Conrad-Diskontinuität"]],
-            ["Welche Zahl ist die kleinste perfekte Zahl?", "6", ["8", "12", "28"]],
-            ["Welche Sprache gehört zu den finno-ugrischen Sprachen?", "Ungarisch", ["Rumänisch", "Bulgarisch", "Griechisch"]],
-            ["Welcher Mond ist der größte Mond des Saturn?", "Titan", ["Europa", "Ganymed", "Io"]],
-            ["Wer formulierte das Unvollständigkeitstheorem?", "Kurt Gödel", ["Alan Turing", "Bertrand Russell", "David Hilbert"]]
-        ]
+        easy: buildQuestionItemsFromPairs(generalEasyQuestionPairs),
+        medium: buildQuestionItemsFromPairs(generalMediumQuestionPairs),
+        hard: buildQuestionItemsFromPairs(generalHardQuestionPairs),
+        genius: buildQuestionItemsFromPairs(generalHardQuestionPairs)
     },
     "Sport": {
         easy: [
@@ -231,7 +615,6 @@ const QUESTIONS_PER_DIFFICULTY = 200;
 const RECENT_ROUND_MEMORY = 15;
 
 function addGeneratedQuestions() {
-    addGeneralQuestions();
     addSportQuestions();
     addMusicQuestions();
     addFilmQuestions();
@@ -366,43 +749,10 @@ function hardenGeniusQuestions() {
     };
 
     Object.entries(harderGeniusQuestions).forEach(([category, questions]) => {
-        if (questionData[category]) {
+        if (category !== "Allgemeinwissen" && questionData[category]) {
             questionData[category].genius = questions;
         }
     });
-}
-
-function addGeneralQuestions() {
-    const groups = questionData["Allgemeinwissen"];
-
-    fillToTarget(groups.easy, (index) => {
-        const a = 3 + index;
-        const b = 2 + (index % 9);
-        return [`Was ist ${a} + ${b}?`, String(a + b), [String(a + b + 1), String(a + b - 1), String(a + b + 2)]];
-    });
-
-    fillToTarget(groups.medium, (index) => {
-        const number = 6 + index;
-        return [`Was ist ${number} mal ${2 + (index % 8)}?`, String(number * (2 + (index % 8))), [String(number + 10), String(number * 2), String(number * 3 + 1)]];
-    });
-
-    const hardFacts = [
-        ["Welche Hauptstadt gehört zu Australien?", "Canberra", ["Sydney", "Melbourne", "Perth"]],
-        ["Welches Element hat die Ordnungszahl 6?", "Kohlenstoff", ["Sauerstoff", "Stickstoff", "Helium"]],
-        ["Welche Wüste ist die größte heiße Wüste der Erde?", "Sahara", ["Gobi", "Kalahari", "Atacama"]],
-        ["Welche Stadt liegt am Bosporus?", "Istanbul", ["Athen", "Sofia", "Bukarest"]],
-        ["Welcher Philosoph schrieb 'Der Staat'?", "Platon", ["Aristoteles", "Sokrates", "Epikur"]]
-    ];
-    fillToTarget(groups.hard, (index) => hardFacts[index % hardFacts.length]);
-
-    const geniusFacts = [
-        ["Welche Zahl ist die kleinste Carmichael-Zahl?", "561", ["341", "1105", "1729"]],
-        ["Welches Element hat das Symbol Ir?", "Iridium", ["Indium", "Iod", "Eisen"]],
-        ["Wie heißt die Diskontinuität zwischen Erdkruste und Erdmantel?", "Mohorovičić-Diskontinuität", ["Gutenberg-Diskontinuität", "Lehmann-Diskontinuität", "Conrad-Diskontinuität"]],
-        ["Welche Hauptstadt liegt am Fluss Daugava?", "Riga", ["Vilnius", "Tallinn", "Minsk"]],
-        ["Wer bewies Fermats letzten Satz?", "Andrew Wiles", ["Terence Tao", "Grigori Perelman", "Kurt Gödel"]]
-    ];
-    fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
 }
 
 function addSportQuestions() {
@@ -422,7 +772,7 @@ function addSportQuestions() {
         ["Welche Sportart hat einen Elfmeter?", "Fußball", ["Golf", "Boxen", "Curling"]],
         ["Welche Sportart findet in einem Ring statt?", "Boxen", ["Tennis", "Segeln", "Radsport"]]
     ];
-    fillToTarget(groups.easy, (index) => easyFacts[index % easyFacts.length]);
+    addUniqueQuestions(groups.easy, easyFacts);
 
     const mediumFacts = [
         ["Wer gewann mit Argentinien die Fußball-WM 2022 als Kapitän?", "Lionel Messi", ["Cristiano Ronaldo", "Neymar", "Kylian Mbappé"]],
@@ -438,7 +788,7 @@ function addSportQuestions() {
         ["Bei welchem Wettbewerb trägt der Führende oft das Gelbe Trikot?", "Tour de France", ["Wimbledon", "Super Bowl", "Davis Cup"]],
         ["Welche Sportart ist mit dem Super Bowl verbunden?", "American Football", ["Eishockey", "Baseball", "Rugby"]]
     ];
-    fillToTarget(groups.medium, (index) => mediumFacts[index % mediumFacts.length]);
+    addUniqueQuestions(groups.medium, mediumFacts);
 
     const hardFacts = [
         ["Welche Tennisoberfläche wird bei Wimbledon gespielt?", "Rasen", ["Sand", "Hartplatz", "Teppich"]],
@@ -454,7 +804,7 @@ function addSportQuestions() {
         ["Wie heißt der Pokal für den NHL-Meister?", "Stanley Cup", ["Vince Lombardi Trophy", "Davis Cup", "Ryder Cup"]],
         ["Welche Disziplin kombiniert Skispringen und Langlauf?", "Nordische Kombination", ["Biathlon", "Ski Alpin", "Skeleton"]]
     ];
-    fillToTarget(groups.hard, (index) => hardFacts[index % hardFacts.length]);
+    addUniqueQuestions(groups.hard, hardFacts);
 
     const geniusFacts = [
         ["Welche Schacheröffnung beginnt mit 1. e4 c5?", "Sizilianische Verteidigung", ["Französische Verteidigung", "Damengambit", "Spanische Partie"]],
@@ -470,22 +820,39 @@ function addSportQuestions() {
         ["Wer gewann 1972 das Schach-WM-Duell gegen Boris Spasski?", "Bobby Fischer", ["Anatoli Karpow", "Garry Kasparov", "Magnus Carlsen"]],
         ["Welche Trophäe bekommt der Sieger des Ryder Cups?", "Ryder Cup", ["Claret Jug", "Stanley Cup", "Davis Cup"]]
     ];
-    fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
+    addUniqueQuestions(groups.genius, geniusFacts);
 }
 
 function addMusicQuestions() {
     const groups = questionData["Musik"];
 
-    fillToTarget(groups.easy, (index) => {
-        const notes = ["C", "D", "E", "F", "G", "A", "H"];
-        const note = notes[index % notes.length];
-        return [`Welche Antwort ist ein Notenname?`, note, ["Tiger", "Lampe", "Wolke"]];
-    });
+    const easyFacts = [
+        ["Welches Instrument hat Tasten und Pedale?", "Klavier", ["Trompete", "Geige", "Triangel"]],
+        ["Wie nennt man mehrere Musiker zusammen?", "Band", ["Karte", "Pinsel", "Teller"]],
+        ["Welches Instrument wird oft gezupft?", "Gitarre", ["Trommel", "Flöte", "Pauke"]],
+        ["Welche Person schreibt Musikstücke?", "Komponist", ["Schiedsrichter", "Pilot", "Bäcker"]],
+        ["Wie nennt man eine gesungene Melodie mit Text?", "Lied", ["Gemälde", "Rezept", "Karte"]],
+        ["Welches Instrument gehört zu einem klassischen Orchester?", "Violine", ["Bohrmaschine", "Lenkrad", "Tastatur"]],
+        ["Wie nennt man lautes Singen mehrerer Personen?", "Chor", ["Solo", "Flüstern", "Pause"]],
+        ["Welches Gerät nutzt ein DJ häufig?", "Mischpult", ["Mikroskop", "Kompass", "Toaster"]],
+        ["Welche Musikrichtung ist eng mit Improvisation verbunden?", "Jazz", ["Nachrichten", "Hörspiel", "Wetterbericht"]],
+        ["Wie nennt man den Anfang eines Musikstücks oft?", "Intro", ["Abspann", "Elfmeter", "Kapitel"]]
+    ];
+    addUniqueQuestions(groups.easy, easyFacts);
 
-    fillToTarget(groups.medium, (index) => {
-        const beats = 2 + (index % 5);
-        return [`Ein Takt hat ${beats} Schläge und es gibt 4 Takte. Wie viele Schläge sind das?`, String(beats * 4), [String(beats + 4), String(beats * 3), String(beats * 5)]];
-    });
+    const mediumFacts = [
+        ["Welche Epoche verbindet man stark mit Bach und Händel?", "Barock", ["Romantik", "Hip-Hop", "Impressionismus"]],
+        ["Wie nennt man eine Tonfolge, die man gut wiedererkennt?", "Melodie", ["Kabel", "Kulisse", "Index"]],
+        ["Welches Instrument spielt man mit Sticks?", "Schlagzeug", ["Harfe", "Oboe", "Cello"]],
+        ["Wie nennt man den wiederholten Grundschlag eines Songs?", "Beat", ["Poster", "Dialog", "Filter"]],
+        ["Was bedeutet piano als Lautstärkeangabe?", "leise", ["laut", "schneller", "höher"]],
+        ["Welche Stimmlage ist höher als Alt?", "Sopran", ["Bass", "Bariton", "Tenor"]],
+        ["Wie nennt man das Zusammenspiel verschiedener Töne?", "Harmonie", ["Kulisse", "Linse", "Szene"]],
+        ["Welcher Begriff beschreibt die Geschwindigkeit eines Stücks?", "Tempo", ["Farbe", "Material", "Licht"]],
+        ["Welche Instrumentenfamilie umfasst Klarinette und Oboe?", "Holzblasinstrumente", ["Blechbläser", "Schlagwerk", "Tasteninstrumente"]],
+        ["Wie nennt man einen kurzen, einprägsamen Musikabschnitt?", "Motiv", ["Abspann", "Torwart", "Kamera"]]
+    ];
+    addUniqueQuestions(groups.medium, mediumFacts);
 
     const hardFacts = [
         ["Welche Molltonart hat drei b als Vorzeichen?", "c-Moll", ["a-Moll", "d-Moll", "g-Moll"]],
@@ -494,7 +861,7 @@ function addMusicQuestions() {
         ["Welche Tonart hat ein Kreuz als Vorzeichen?", "G-Dur", ["F-Dur", "C-Dur", "Es-Dur"]],
         ["Wie nennt man das allmähliche Lauterwerden?", "Crescendo", ["Diminuendo", "Legato", "Staccato"]]
     ];
-    fillToTarget(groups.hard, (index) => hardFacts[index % hardFacts.length]);
+    addUniqueQuestions(groups.hard, hardFacts);
 
     const geniusFacts = [
         ["Welche Kirchentonart beginnt auf F?", "Lydisch", ["Dorisch", "Phrygisch", "Äolisch"]],
@@ -503,21 +870,39 @@ function addMusicQuestions() {
         ["Welche Skala besteht aus fünf Tönen?", "Pentatonik", ["Chromatik", "Ganztonleiter", "Molltonleiter"]],
         ["Welches Intervall umfasst sechs Halbtonschritte?", "Tritonus", ["Quarte", "Quinte", "kleine Sexte"]]
     ];
-    fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
+    addUniqueQuestions(groups.genius, geniusFacts);
 }
 
 function addFilmQuestions() {
     const groups = questionData["Film & Serien"];
 
-    fillToTarget(groups.easy, (index) => {
-        const episodes = 3 + (index % 8);
-        return [`Eine Serie hat ${episodes} Folgen und bekommt eine weitere Folge. Wie viele Folgen sind es?`, String(episodes + 1), [String(episodes), String(episodes + 2), String(episodes + 3)]];
-    });
+    const easyFacts = [
+        ["Wie nennt man eine Folge einer Serie?", "Episode", ["Kapiteldeckel", "Torlinie", "Notenblatt"]],
+        ["Wer steht bei Dreharbeiten vor der Kamera?", "Schauspieler", ["Schiedsrichter", "Mechaniker", "Zahnarzt"]],
+        ["Wie nennt man den Ort, an dem eine Szene gedreht wird?", "Set", ["Ring", "Becken", "Bahnsteig"]],
+        ["Was sieht man sich vor einem Filmstart oft als Werbung an?", "Trailer", ["Quittung", "Spielstand", "Fahrplan"]],
+        ["Wie nennt man eine gezeichnete Filmart?", "Animation", ["Operation", "Navigation", "Reformation"]],
+        ["Welcher Raum zeigt Filme auf großer Leinwand?", "Kino", ["Labor", "Werkstatt", "Bibliothek"]],
+        ["Wie nennt man die Kleidung der Figuren im Film?", "Kostüm", ["Kompass", "Werkzeug", "Rezept"]],
+        ["Wer leitet typischerweise einen Filmdreh?", "Regisseur", ["Torwart", "Dirigent im Stadion", "Kapitän zur See"]],
+        ["Wie nennt man gesprochene Texte unter dem Bild?", "Untertitel", ["Abzeichen", "Spielfeld", "Notensystem"]],
+        ["Was ist ein Filmplakat?", "Poster", ["Objektiv", "Mikrofon", "Schnittprogramm"]]
+    ];
+    addUniqueQuestions(groups.easy, easyFacts);
 
-    fillToTarget(groups.medium, (index) => {
-        const minutes = 80 + index;
-        return [`Ein Film dauert ${minutes} Minuten. Wie viele Minuten fehlen bis ${minutes + 20}?`, "20", ["10", "15", "30"]];
-    });
+    const mediumFacts = [
+        ["Wie nennt man eine neue Version eines bekannten Films?", "Remake", ["Abspann", "Soundcheck", "Foul"]],
+        ["Was bezeichnet ein Spin-off?", "Ableger einer Serie oder eines Films", ["Tonfehler", "Kamerastativ", "Kinoticket"]],
+        ["Welche Aufgabe hat die Kamera beim Film?", "Bilder aufnehmen", ["Kostüme nähen", "Musik komponieren", "Tickets verkaufen"]],
+        ["Wie nennt man die Nachbearbeitung eines Filmschnitts?", "Montage", ["Aufschlag", "Diagnose", "Akkord"]],
+        ["Welche Person schreibt das Drehbuch?", "Drehbuchautor", ["Cutter", "Maskenbildner", "Kinobetreiber"]],
+        ["Was ist ein Cameo?", "kurzer Gastauftritt", ["Hauptpreis", "Kameraobjektiv", "Werbepause"]],
+        ["Wie nennt man die Musik zu einem Film?", "Soundtrack", ["Storyboard", "Untertitel", "Schnittliste"]],
+        ["Was bedeutet Genre bei Filmen?", "Gattung oder Art", ["Kameramarke", "Ticketpreis", "Drehort"]],
+        ["Wie nennt man eine Serie mit zusammengehörigen Folgenblöcken?", "Staffel", ["Szene", "Premiere", "Plakat"]],
+        ["Welche Arbeit übernimmt die Maske?", "Aussehen der Darsteller gestalten", ["Dialoge schreiben", "Kameras tragen", "Kinosaal reinigen"]]
+    ];
+    addUniqueQuestions(groups.medium, mediumFacts);
 
     const hardFacts = [
         ["Wer führte bei 'Taxi Driver' Regie?", "Martin Scorsese", ["Francis Ford Coppola", "Brian De Palma", "Sidney Lumet"]],
@@ -526,7 +911,7 @@ function addFilmQuestions() {
         ["Wie nennt man den bewussten Bruch der vierten Wand?", "Meta-Kommentar", ["Jump Cut", "Storyboard", "Foley"]],
         ["Welche Filmtechnik erzeugt Bewegungen Bild für Bild?", "Stop-Motion", ["Motion Blur", "Rotoskopie", "Split Screen"]]
     ];
-    fillToTarget(groups.hard, (index) => hardFacts[index % hardFacts.length]);
+    addUniqueQuestions(groups.hard, hardFacts);
 
     const geniusFacts = [
         ["Wer drehte den Stummfilm 'Der letzte Mann'?", "F. W. Murnau", ["Fritz Lang", "G. W. Pabst", "Ernst Lubitsch"]],
@@ -535,7 +920,7 @@ function addFilmQuestions() {
         ["Wer führte bei 'Jeanne Dielman' Regie?", "Chantal Akerman", ["Agnès Varda", "Claire Denis", "Jane Campion"]],
         ["Welcher sowjetische Regisseur prägte die Montageteorie?", "Sergei Eisenstein", ["Andrei Tarkowski", "Dziga Vertov", "Vsevolod Pudovkin"]]
     ];
-    fillToTarget(groups.genius, (index) => geniusFacts[index % geniusFacts.length]);
+    addUniqueQuestions(groups.genius, geniusFacts);
 }
 
 function addMedicineQuestions() {
@@ -699,28 +1084,46 @@ function addTechQuestions() {
 
 function ensureMinimumQuestionsPerCategory() {
     Object.entries(questionData).forEach(([categoryName, groups]) => {
+        if (categoryName === "Allgemeinwissen") {
+            return;
+        }
+
         Object.entries(groups).forEach(([difficulty, group]) => {
             fillToTarget(group, createQuestionExpansionFactory(categoryName, difficulty, group));
         });
     });
 }
 
+function addUniqueQuestions(group, questions) {
+    const usedQuestionTexts = new Set(group.map((question) => cleanQuestionText(question[0])));
+
+    questions.forEach((question) => {
+        const cleanText = cleanQuestionText(question[0]);
+
+        if (!usedQuestionTexts.has(cleanText)) {
+            usedQuestionTexts.add(cleanText);
+            group.push(question);
+        }
+    });
+}
+
 function fillToTarget(group, questionFactory) {
     let index = 0;
-    const usedQuestionTexts = new Set(group.map((question) => question[0]));
+    let attempts = 0;
+    const maximumAttempts = QUESTIONS_PER_DIFFICULTY * 60;
+    const usedQuestionTexts = new Set(group.map((question) => cleanQuestionText(question[0])));
 
-    while (group.length < QUESTIONS_PER_DIFFICULTY) {
+    while (group.length < QUESTIONS_PER_DIFFICULTY && attempts < maximumAttempts) {
         const question = [...questionFactory(index)];
-        let variantIndex = 1;
+        const cleanText = cleanQuestionText(question[0]);
 
-        while (usedQuestionTexts.has(question[0])) {
-            variantIndex += 1;
-            question[0] = `${questionFactory(index)[0]} Zusatzrunde ${variantIndex}`;
+        if (!usedQuestionTexts.has(cleanText)) {
+            usedQuestionTexts.add(cleanText);
+            group.push(question);
         }
 
-        usedQuestionTexts.add(question[0]);
-        group.push(question);
         index += 1;
+        attempts += 1;
     }
 }
 
@@ -808,8 +1211,29 @@ function createQuestion(question, answer, wrongAnswers) {
     };
 }
 
+function isArithmeticQuestion(question) {
+    const cleanQuestion = cleanQuestionText(question);
+
+    return /^Was ist\s+\d+\s*(?:x|×|\*|mal|\+|-|:)\s*\d+\??$/i.test(cleanQuestion)
+        || /\bWie viele\s+(?:Schläge|Folgen|Minuten)\b/i.test(cleanQuestion)
+        || /\b\d+\s*(?:x|×|\*|mal|\+)\s*\d+\b/i.test(cleanQuestion);
+}
+
 function buildQuestions(items) {
-    return items.map(([question, answer, wrongAnswers]) => createQuestion(question, answer, wrongAnswers));
+    return items
+        .filter(([question]) => !isArithmeticQuestion(question))
+        .map(([question, answer, wrongAnswers]) => createQuestion(question, answer, wrongAnswers));
+}
+
+function getCleanQuestionItemsForDifficulty(difficulty) {
+    const questionsByDifficulty = {
+        easy: generalEasyQuestionPairs,
+        medium: generalMediumQuestionPairs,
+        hard: generalHardQuestionPairs,
+        genius: generalHardQuestionPairs
+    };
+
+    return buildQuestionItemsFromPairs(questionsByDifficulty[difficulty] || generalEasyQuestionPairs);
 }
 
 function createRoundQuestions(questions, memoryKey) {
@@ -853,7 +1277,9 @@ function rememberRoundQuestions(memoryKey, questions) {
 }
 
 function cleanQuestionText(question) {
-    return question.replace(/\s+\(\d+\)$/, "");
+    return question
+        .replace(/\s+Zusatzrunde\s+\d+$/i, "")
+        .replace(/\s+\(\d+\)$/, "");
 }
 
 function normalizeQuestionText(question) {
@@ -1912,7 +2338,7 @@ function selectAnswer(answerIndex) {
     if (!selectedCategory) {
         selectedCategory = categoryChoices[answerIndex];
         const memoryKey = `${selectedCategory.name}-${selectedDifficulty}`;
-        roundQuestions = createRoundQuestions(selectedCategory.questions[selectedDifficulty], memoryKey);
+        roundQuestions = createRoundQuestions(buildQuestions(getCleanQuestionItemsForDifficulty(selectedDifficulty)), memoryKey);
         rememberRoundQuestions(memoryKey, roundQuestions);
         currentQuestionIndex = 0;
         score = 0;
@@ -1937,3 +2363,11 @@ loadFacts();
 loadStoredPlayerAccount();
 document.querySelector(".answer-btn").addEventListener("click", showNextFact);
 factIntervalId = setInterval(loadFacts, 8000);
+
+
+
+
+
+
+
+
