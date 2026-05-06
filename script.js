@@ -35,7 +35,7 @@ function buildQuestionItemsFromPairs(pairs) {
 }
 
 function createWrongAnswers(question, answer, fallbackAnswers) {
-    const wrongAnswers = [];
+    const wrongAnswers = createNumericWrongAnswers(answer);
     const pools = [
         getDistractorPool(question, answer),
         fallbackAnswers,
@@ -53,6 +53,39 @@ function createWrongAnswers(question, answer, fallbackAnswers) {
     });
 
     return wrongAnswers;
+}
+
+function createNumericWrongAnswers(answer) {
+    const match = answer.match(/^(\d+(?:[.,]\d+)?)(.*)$/);
+
+    if (!match) {
+        return [];
+    }
+
+    const numberText = match[1];
+    const suffix = match[2];
+    const value = Number(numberText.replace(",", "."));
+
+    if (!Number.isFinite(value)) {
+        return [];
+    }
+
+    const deltas = value <= 5
+        ? [-2, -1, 1, 2]
+        : value <= 15
+            ? [-2, -1, 1, 2]
+            : value <= 60
+                ? [-10, -5, 5, 10]
+                : value <= 120
+                    ? [-15, -10, 10, 15]
+                    : [-100, -10, 10, 100];
+
+    return deltas
+        .map((delta) => value + delta)
+        .filter((candidate) => candidate > 0 && candidate !== value)
+        .map((candidate) => `${Number.isInteger(candidate) ? candidate : candidate.toString().replace(".", ",")}${suffix}`)
+        .filter((candidate, index, candidates) => candidate !== answer && candidates.indexOf(candidate) === index)
+        .slice(0, 3);
 }
 
 function getDistractorPool(question, answer) {
@@ -155,6 +188,21 @@ function getDistractorPool(question, answer) {
         return distractorPools.people;
     }
 
+    if (
+        lowerQuestion.includes("sport")
+        || lowerQuestion.includes("fußball")
+        || lowerQuestion.includes("basketball")
+        || lowerQuestion.includes("tennis")
+        || lowerQuestion.includes("olymp")
+        || lowerQuestion.includes("spiel")
+        || lowerQuestion.includes("rennen")
+        || lowerQuestion.includes("turnier")
+        || lowerQuestion.includes("tor")
+        || distractorPools.sports.includes(answer)
+    ) {
+        return distractorPools.sports;
+    }
+
     return distractorPools.general;
 }
 
@@ -227,6 +275,16 @@ const distractorPools = {
         "Albert Einstein", "Isaac Newton", "Nikolaus Kopernikus",
         "Alexander Fleming", "Franz Kafka", "George Orwell", "Homer"
     ],
+    sports: [
+        "Fußball", "Basketball", "Tennis", "Eishockey", "Handball", "Volleyball",
+        "Golf", "Boxen", "Radsport", "Schwimmen", "Fechten", "Judo", "Rugby",
+        "American Football", "Formel 1", "Skifahren", "Snowboarden", "Badminton",
+        "Tischtennis", "Leichtathletik", "Turnen", "Billard", "Darts", "Curling",
+        "Polo", "Bogenschießen", "Gewichtheben", "Rudern", "Surfen", "Marathon",
+        "Triathlon", "Tor", "Strafraum", "Finale", "Champion", "Konter",
+        "Halbzeitpause", "Nachspielzeit", "Auswechslung", "Startschuss",
+        "Olympiasieger", "Siebenmeter", "Freistoßtor", "Boxengasse"
+    ],
     numbers: [
         "1", "2", "3", "4", "5", "6", "7", "8", "10", "11", "12", "16", "24",
         "32", "46", "50", "60", "206", "300", "1000", "3600", "86.400",
@@ -237,7 +295,209 @@ const distractorPools = {
         "Asien", "Afrika", "Australien", "Grün", "Blau", "Jupiter", "Saturn"
     ]
 };
-}
+
+const sportEasyQuestionPairs = [
+    ["Wie viele Spieler stehen bei einer Fußballmannschaft auf dem Feld?", "11"],
+    ["Welche Sportart spielt man mit einem Basketball?", "Basketball"],
+    ["Wie heißt das größte Fußballturnier der Welt?", "FIFA-Weltmeisterschaft"],
+    ["Welche Farbe hat die Karte bei einem Platzverweis im Fußball?", "Rot"],
+    ["Wie nennt man ein Unentschieden im Fußball?", "Remis"],
+    ["Welche Sportart betreibt man in Wimbledon?", "Tennis"],
+    ["Wie viele Ringe hat das olympische Symbol?", "5"],
+    ["Mit welchem Körperteil darf ein Feldspieler im Fußball den Ball normalerweise nicht berühren?", "Mit der Hand"],
+    ["Wie nennt man den Punktgewinn im Tennis?", "Punkt"],
+    ["Welche Sportart nutzt einen Puck?", "Eishockey"],
+    ["Wie lange dauert ein Fußballspiel regulär?", "90 Minuten"],
+    ["Wie nennt man den Bereich vor dem Tor im Fußball?", "Strafraum"],
+    ["Welche Sportart ist Michael Jordan berühmt gemacht hat?", "Basketball"],
+    ["Wie viele Spieler hat ein Volleyballteam auf dem Feld?", "6"],
+    ["Welche Farbe hat meistens ein Tennisball?", "Gelb"],
+    ["Welche Sportart fährt man auf Schnee mit zwei Brettern?", "Skifahren"],
+    ["Wie nennt man einen Treffer im Fußball?", "Tor"],
+    ["Wie viele Halbzeiten hat ein Handballspiel?", "2"],
+    ["Welche Sportart wird auf Eis mit Besen gespielt?", "Curling"],
+    ["Wie heißt die höchste deutsche Fußballliga?", "Bundesliga"],
+    ["Welche Sportart verbindet Schwimmen, Radfahren und Laufen?", "Triathlon"],
+    ["Wie nennt man einen Spieler, der Tore verhindert?", "Torwart"],
+    ["Welche Sportart spielt man mit Schläger und Federball?", "Badminton"],
+    ["Wie viele Punkte zählt ein Touchdown im American Football?", "6"],
+    ["Welche Sportart ist Usain Bolt berühmt gemacht hat?", "Sprint"],
+    ["Wie nennt man die Verlängerung im Fußball?", "Extra Time/Verlängerung"],
+    ["Welche Sportart nutzt man beim „Hole in One“?", "Golf"],
+    ["Wie viele Spieler hat eine Basketballmannschaft auf dem Feld?", "5"],
+    ["Welche Farbe hat die Ziellinie im Motorsport meistens?", "Schwarz-Weiß kariert"],
+    ["Wie nennt man einen Treffer mit dem Kopf im Fußball?", "Kopfballtor"],
+    ["Welche Sportart wird bei der Tour de France ausgeübt?", "Radsport"],
+    ["Wie viele Sätze muss man im Herrentennis bei Grand Slams meist gewinnen?", "3"],
+    ["Welche Sportart nutzt man mit einem Surfbrett?", "Surfen"],
+    ["Wie nennt man die olympischen Spiele im Winter?", "Winterspiele"],
+    ["Welche Sportart spielt Cristiano Ronaldo?", "Fußball"],
+    ["Wie viele Löcher hat eine normale Golfrunde?", "18"],
+    ["Welche Sportart nutzt einen Ring und Boxhandschuhe?", "Boxen"],
+    ["Wie nennt man den besten Torschützen eines Turniers?", "Torschützenkönig"],
+    ["Welche Sportart wird auf einem Tatami ausgeübt?", "Judo"],
+    ["Wie viele Minuten dauert ein Basketballspiel in der NBA regulär?", "48"],
+    ["Welche Sportart spielt man auf Sand oft im Sommer?", "Beachvolleyball"],
+    ["Wie nennt man ein Rennen mit Hindernissen in der Leichtathletik?", "Hürdenlauf"],
+    ["Welche Sportart nutzt ein Netz über der Spielfeldmitte?", "Tennis"],
+    ["Wie viele Spieler stehen bei einem Handballteam auf dem Feld?", "7"],
+    ["Welche Sportart machte Michael Schumacher berühmt?", "Formel 1"],
+    ["Wie nennt man den Start beim Schwimmen?", "Sprungstart"],
+    ["Welche Sportart nutzt Kufen an den Schuhen?", "Eislaufen"],
+    ["Wie viele Punkte gibt ein Freiwurf im Basketball?", "1"],
+    ["Welche Sportart wird beim Super Bowl gespielt?", "American Football"],
+    ["Wie nennt man den Schiedsrichter im Fußball oft umgangssprachlich?", "Referee/Schiri"],
+    ["Welche Sportart spielt man mit einem Rugbyball?", "Rugby"],
+    ["Wie viele Spieler hat ein Eishockeyteam gleichzeitig auf dem Eis?", "6"],
+    ["Welche Sportart nutzt ein Trampolin?", "Trampolinspringen"],
+    ["Wie nennt man einen perfekten Wurf im Bowling?", "Strike"],
+    ["Welche Sportart machte Roger Federer berühmt?", "Tennis"],
+    ["Wie viele Minuten dauert ein Handballspiel regulär?", "60"],
+    ["Welche Sportart nutzt einen Helm und ein Pferd?", "Polo"],
+    ["Wie nennt man den Bereich hinter der Dreierlinie im Basketball?", "Dreipunktbereich"],
+    ["Welche Sportart wird bei Olympia mit Fechtwaffen ausgeübt?", "Fechten"],
+    ["Wie viele Spieler hat ein Baseballteam auf dem Feld?", "9"],
+    ["Welche Sportart nutzt einen Billardtisch?", "Billard"],
+    ["Wie nennt man einen Sieg ohne Gegentor im Fußball?", "Zu-Null-Sieg"],
+    ["Welche Sportart machte Tiger Woods berühmt?", "Golf"],
+    ["Wie viele Spieler hat ein Wasserballteam im Wasser?", "7"],
+    ["Welche Sportart nutzt einen Speer?", "Speerwurf"],
+    ["Wie nennt man den Bereich zum Wechseln im Motorsport?", "Boxengasse"],
+    ["Welche Sportart nutzt einen Sattel und Hindernisse?", "Springreiten"],
+    ["Wie viele Punkte zählt ein Elfmeter-Tor im Fußball?", "1"],
+    ["Welche Sportart nutzt ein Kajak?", "Kanusport"],
+    ["Wie nennt man den Sieger eines Turniers?", "Champion"],
+    ["Welche Sportart nutzt ein Snowboard?", "Snowboarden"],
+    ["Wie viele Spieler hat ein Volleyballteam insgesamt meist im Kader?", "12"],
+    ["Welche Sportart machte Lewis Hamilton berühmt?", "Formel 1"],
+    ["Wie nennt man einen Wurf aus dem Stand im Basketball?", "Standwurf"],
+    ["Welche Sportart nutzt einen Ring aus Metall am Korb?", "Basketball"],
+    ["Wie viele Viertel hat ein American-Football-Spiel?", "4"],
+    ["Welche Sportart nutzt einen Tisch und kleine Schläger?", "Tischtennis"],
+    ["Wie nennt man einen Gleichstand nach regulärer Spielzeit?", "Unentschieden"],
+    ["Welche Sportart nutzt einen Fallschirm?", "Fallschirmspringen"],
+    ["Wie viele Spieler stehen bei einem Rugbyteam auf dem Feld?", "15"],
+    ["Welche Sportart wird in der NBA gespielt?", "Basketball"],
+    ["Wie nennt man das Ziel beim Darts?", "Bullseye"],
+    ["Welche Sportart machte Serena Williams berühmt?", "Tennis"],
+    ["Wie viele Minuten dauert ein Eishockeydrittel?", "20"],
+    ["Welche Sportart nutzt einen Barren?", "Turnen"],
+    ["Wie nennt man das Endspiel eines Turniers?", "Finale"],
+    ["Welche Sportart nutzt Hanteln?", "Gewichtheben"],
+    ["Wie viele Spieler hat ein Fußballteam insgesamt auf dem Platz inklusive Torwart?", "11"],
+    ["Welche Sportart nutzt ein Segelboot?", "Segeln"],
+    ["Wie nennt man einen Treffer im Hockey?", "Goal/Tor"],
+    ["Welche Sportart nutzt ein Rennrad?", "Radsport"],
+    ["Wie viele Bahnen hat eine Standard-Laufbahn?", "8"],
+    ["Welche Sportart machte Kylian Mbappé berühmt?", "Fußball"],
+    ["Wie nennt man die Pause zwischen zwei Halbzeiten?", "Halbzeitpause"],
+    ["Welche Sportart nutzt eine Matte und Würfe?", "Ringen"],
+    ["Wie viele Punkte gibt ein normaler Korb im Basketball?", "2"],
+    ["Welche Sportart nutzt einen Helm und Schläger auf Eis?", "Eishockey"],
+    ["Wie nennt man den Bereich außerhalb des Spielfelds?", "Aus"],
+    ["Welche Sportart nutzt ein Rennpferd?", "Pferderennen"],
+    ["Wie viele Spieler stehen bei einem Fußballspiel insgesamt auf dem Feld?", "22"],
+    ["Welche Sportart nutzt einen Tennisschläger?", "Tennis"],
+    ["Wie nennt man einen Fehlwurf beim Bowling ohne Pins?", "Gutterball"],
+    ["Welche Sportart machte Dirk Nowitzki berühmt?", "Basketball"],
+    ["Wie viele Sekunden hat ein Angriff im Basketball (NBA)?", "24"],
+    ["Welche Sportart nutzt ein Netz und einen Volleyball?", "Volleyball"],
+    ["Wie nennt man einen besonders schnellen Gegenangriff?", "Konter"],
+    ["Welche Sportart nutzt Rollschuhe oft im Derby?", "Roller Derby"],
+    ["Wie viele Spieler hat ein Cricketteam?", "11"],
+    ["Welche Sportart nutzt eine Zielscheibe?", "Bogenschießen"],
+    ["Wie nennt man einen Strafstoß im Handball?", "Siebenmeter"],
+    ["Welche Sportart nutzt ein Kanu?", "Kanurennsport"],
+    ["Wie viele Minuten dauert ein Rugbyspiel regulär?", "80"],
+    ["Welche Sportart machte Neymar berühmt?", "Fußball"],
+    ["Wie nennt man einen perfekten Sprung ins Wasser ohne Spritzer?", "Sauberer Sprung"],
+    ["Welche Sportart nutzt eine Startbox?", "Pferderennen"],
+    ["Wie viele Spieler hat ein Lacrosse-Team auf dem Feld?", "10"],
+    ["Welche Sportart nutzt einen Fechtdegen?", "Fechten"],
+    ["Wie nennt man die höchste Spielklasse oft allgemein?", "Erste Liga"],
+    ["Welche Sportart nutzt Kreide am Queue?", "Billard"],
+    ["Wie viele Punkte zählt ein Safety im American Football?", "2"],
+    ["Welche Sportart nutzt ein Springseil im Training oft?", "Boxen"],
+    ["Wie nennt man die Linie vor dem Tor im Hockey?", "Torlinie"],
+    ["Welche Sportart machte Max Verstappen berühmt?", "Formel 1"],
+    ["Wie viele Schläger darf ein Golfer maximal im Bag haben?", "14"],
+    ["Welche Sportart nutzt ein Einrad?", "Einradfahren"],
+    ["Wie nennt man einen direkten Freistoßtreffer?", "Freistoßtor"],
+    ["Welche Sportart nutzt eine Eisbahn und Tanz?", "Eiskunstlauf"],
+    ["Wie viele Basen gibt es im Baseball?", "4"],
+    ["Welche Sportart nutzt ein Ruderboot?", "Rudern"],
+    ["Wie nennt man einen Lauf über 42,195 km?", "Marathon"],
+    ["Welche Sportart nutzt eine Zielscheibe mit 20 Feldern?", "Darts"],
+    ["Wie viele Spieler hat ein Futsalteam auf dem Feld?", "5"],
+    ["Welche Sportart machte Tom Brady berühmt?", "American Football"],
+    ["Wie nennt man den Bereich zwischen Torpfosten und Latte?", "Tor"],
+    ["Welche Sportart nutzt einen Diskus?", "Diskuswurf"],
+    ["Wie viele Runden dauert ein Formel-1-Rennen ungefähr?", "Unterschiedlich je nach Strecke"],
+    ["Welche Sportart nutzt ein Springpferd?", "Vielseitigkeitsreiten"],
+    ["Wie nennt man ein Rennen gegen die Uhr im Radsport?", "Zeitfahren"],
+    ["Welche Sportart nutzt einen Pistolenschuss zum Start?", "Leichtathletik"],
+    ["Wie viele Punkte gibt ein Touchdown mit Extrapunkt?", "7"],
+    ["Welche Sportart nutzt eine Bobbahn?", "Bobsport"],
+    ["Wie nennt man den letzten Abschnitt eines Rennens?", "Schlussphase"],
+    ["Welche Sportart machte Novak Djokovic berühmt?", "Tennis"],
+    ["Wie viele Drittel hat ein Eishockeyspiel?", "3"],
+    ["Welche Sportart nutzt einen Sandsack im Training?", "Boxen"],
+    ["Wie nennt man den Gewinner einer Goldmedaille?", "Olympiasieger"],
+    ["Welche Sportart nutzt ein Trikot mit Rückennummern?", "Fußball"],
+    ["Wie viele Spieler stehen bei einem Baseballteam gleichzeitig im Feld?", "9"],
+    ["Welche Sportart nutzt ein Balancebrett auf Wellen?", "Surfen"],
+    ["Wie nennt man das Ende eines Rennens?", "Zieleinlauf"],
+    ["Welche Sportart nutzt ein Schwert als Sportgerät?", "Fechten"],
+    ["Wie viele Spieler hat ein Dodgeball-Team oft?", "6"],
+    ["Welche Sportart machte Mikaela Shiffrin berühmt?", "Ski Alpin"],
+    ["Wie nennt man den Bereich für Ersatzspieler?", "Bank"],
+    ["Welche Sportart nutzt einen Hammer als Wurfgerät?", "Hammerwurf"],
+    ["Wie viele Minuten dauert ein Futsalspiel regulär?", "40"],
+    ["Welche Sportart nutzt Klettergriffe?", "Sportklettern"],
+    ["Wie nennt man eine Niederlage ohne eigenen Punkt?", "Shutout/Zu-Null-Niederlage"],
+    ["Welche Sportart nutzt einen Windschirm?", "Windsurfen"],
+    ["Wie viele Schiedsrichter gibt es oft im Basketball?", "3"],
+    ["Welche Sportart nutzt eine Halfpipe?", "Snowboard/Freestyle-Ski"],
+    ["Wie nennt man einen Spielerwechsel?", "Auswechslung"],
+    ["Welche Sportart machte Zlatan Ibrahimović berühmt?", "Fußball"],
+    ["Wie viele Spieler hat ein Team beim Curling?", "4"],
+    ["Welche Sportart nutzt eine Startklappe?", "Schwimmen"],
+    ["Wie nennt man die Zeitmessung im Motorsport?", "Timing"],
+    ["Welche Sportart nutzt einen Gymnastikball?", "Gymnastik"],
+    ["Wie viele Löcher hat ein Mini-Golf-Standardkurs oft?", "18"],
+    ["Welche Sportart nutzt ein Netz mit niedriger Höhe?", "Badminton"],
+    ["Wie nennt man einen sehr hohen Sieg?", "Kantersieg"],
+    ["Welche Sportart nutzt eine Luftpistole?", "Sportschießen"],
+    ["Wie viele Spieler hat ein Team beim Beachvolleyball?", "2"],
+    ["Welche Sportart machte Lamine Yamal berühmt?", "Fußball"],
+    ["Wie nennt man die Fläche um den Basketballkorb?", "Zone"],
+    ["Welche Sportart nutzt einen Schwebebalken?", "Turnen"],
+    ["Wie viele Minuten dauert ein Volleyballsatz mindestens?", "Keine feste Zeit"],
+    ["Welche Sportart nutzt eine Finne am Brett?", "Surfen"],
+    ["Wie nennt man das Startsignal im Rennen?", "Startschuss"],
+    ["Welche Sportart nutzt einen Helm mit Visier oft?", "American Football"],
+    ["Wie viele Spieler hat ein Team im Polo auf dem Feld?", "4"],
+    ["Welche Sportart nutzt einen Schlitten auf Eis?", "Rennrodeln"],
+    ["Wie nennt man den Bereich für Trainer und Betreuer?", "Coaching Zone"],
+    ["Welche Sportart machte Erling Haaland berühmt?", "Fußball"],
+    ["Wie viele Punkte braucht man meist zum Satzgewinn im Tischtennis?", "11"],
+    ["Welche Sportart nutzt einen Judogi?", "Judo"],
+    ["Wie nennt man den ersten Platz eines Rennens?", "Sieg"],
+    ["Welche Sportart nutzt einen Speer als Wurfgerät?", "Speerwurf"],
+    ["Wie viele Spieler hat ein Team im Ultimate Frisbee oft?", "7"],
+    ["Welche Sportart nutzt einen Mountainbike-Parcours?", "Mountainbiking"],
+    ["Wie nennt man die zusätzliche Zeit nach regulärer Spielzeit?", "Nachspielzeit"],
+    ["Welche Sportart nutzt einen Schachtimer?", "Schach"],
+    ["Wie viele Sekunden darf ein Torwart im Fußball den Ball halten?", "6"],
+    ["Welche Sportart machte Simone Biles berühmt?", "Turnen"],
+    ["Wie nennt man den Start eines Rennens im Motorsport?", "Gridstart"],
+    ["Welche Sportart nutzt eine Hantelstange?", "Gewichtheben"],
+    ["Wie viele Spieler stehen bei einem Wasserballspiel insgesamt im Wasser?", "14"],
+    ["Welche Sportart nutzt einen Bogen?", "Bogenschießen"],
+    ["Wie nennt man den letzten Versuch im Sport oft?", "Entscheidungsversuch"],
+    ["Welche Sportart nutzt einen Squashschläger?", "Squash"],
+    ["Wie viele Minuten dauert ein Fußballspiel inklusive Halbzeitpause ungefähr?", "105 Minuten"]
+];
 
 const generalEasyQuestionPairs = [
     ["Was ist die Hauptstadt von Deutschland?", "Berlin"],
@@ -654,18 +914,7 @@ const questionData = {
         genius: buildQuestionItemsFromPairs(generalHardQuestionPairs)
     },
     "Sport": {
-        easy: [
-            ["Wie lange dauert ein normales Fußballspiel?", "90 Minuten", ["60 Minuten", "80 Minuten", "120 Minuten"]],
-            ["In welcher Sportart wirft man den Ball in einen Korb?", "Basketball", ["Tennis", "Golf", "Rugby"]],
-            ["Welche Sportart spielt man mit Schläger und gelbem Ball?", "Tennis", ["Boxen", "Schwimmen", "Skispringen"]],
-            ["Wie viele Spieler hat ein Fußballteam auf dem Feld?", "11", ["7", "9", "12"]],
-            ["In welcher Sportart schwimmt man Bahnen?", "Schwimmen", ["Handball", "Fechten", "Radsport"]],
-            ["In welcher Sportart fährt man oft mit einem Fahrrad?", "Radsport", ["Boxen", "Tischtennis", "Volleyball"]],
-            ["Welche Sportart spielt man auf Eis mit einem Puck?", "Eishockey", ["Fußball", "Baseball", "Rugby"]],
-            ["Wie nennt man den Torwart im Fußball auch?", "Keeper", ["Stürmer", "Trainer", "Schiedsrichter"]],
-            ["In welcher Sportart gibt es einen Ring als Kampffläche?", "Boxen", ["Golf", "Segeln", "Skifahren"]],
-            ["Welche Sportart spielt man mit einem kleinen weißen Ball und Schlägern auf Rasen?", "Golf", ["Judo", "Handball", "Rudern"]]
-        ],
+        easy: buildQuestionItemsFromPairs(sportEasyQuestionPairs),
         medium: [
             ["In welcher Sportart gibt es einen Touchdown?", "American Football", ["Basketball", "Tennis", "Handball"]],
             ["Wie viele Punkte gibt ein normaler Basketballwurf aus dem Feld?", "2", ["1", "3", "4"]],
@@ -1419,7 +1668,11 @@ function buildQuestions(items) {
         .map(([question, answer, wrongAnswers]) => createQuestion(question, answer, wrongAnswers));
 }
 
-function getCleanQuestionItemsForDifficulty(difficulty) {
+function getCleanQuestionItemsForDifficulty(difficulty, categoryName) {
+    if (categoryName === "Sport" && difficulty === "easy") {
+        return buildQuestionItemsFromPairs(sportEasyQuestionPairs);
+    }
+
     const questionsByDifficulty = {
         easy: generalEasyQuestionPairs,
         medium: generalMediumQuestionPairs,
@@ -2532,7 +2785,7 @@ function selectAnswer(answerIndex) {
     if (!selectedCategory) {
         selectedCategory = categoryChoices[answerIndex];
         const memoryKey = `${selectedCategory.name}-${selectedDifficulty}`;
-        roundQuestions = createRoundQuestions(buildQuestions(getCleanQuestionItemsForDifficulty(selectedDifficulty)), memoryKey);
+        roundQuestions = createRoundQuestions(buildQuestions(getCleanQuestionItemsForDifficulty(selectedDifficulty, selectedCategory.name)), memoryKey);
         rememberRoundQuestions(memoryKey, roundQuestions);
         currentQuestionIndex = 0;
         score = 0;
@@ -2557,6 +2810,7 @@ loadFacts();
 loadStoredPlayerAccount();
 document.querySelector(".answer-btn").addEventListener("click", showNextFact);
 factIntervalId = setInterval(loadFacts, 8000);
+
 
 
 
